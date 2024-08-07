@@ -58,7 +58,7 @@
         @selection-change="selectStudentsList"
       >
         <uni-tr>
-          <uni-th width="60" align="center">学院姓名</uni-th>
+          <uni-th width="60" align="center">学员姓名</uni-th>
           <uni-th width="130" align="center">申请会见家属</uni-th>
           <uni-th width="100" align="center">学员所在大队</uni-th>
           <uni-th width="100" align="center">学员家庭住址</uni-th>
@@ -365,7 +365,7 @@ const notOut = index => {
   notIndex.value = index // 记录待带出学员的索引
 }
 
-//隐藏不带出理由弹窗 
+//隐藏不带出理由弹窗
 const hideReason = () => {
   showReason.value = false
 }
@@ -391,26 +391,32 @@ const onCancel = () => {
 
 <style lang="scss" scoped>
 .header {
-  height: 15%;
-  background-color: #e8e6e6;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 5%;
+  height: 12%;
+  margin: 0 3%;
+  padding: 2%;
+  border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
+  background-color: rgba(175, 174, 174, 0.3);
+  // backdrop-filter: blur(1.4648rpx /* 2px -> 1.4648rpx */); /* 添加模糊效果 */
   .team-select {
-    width: 25%;
+    width:35%;
     padding: 0 0 0 3.6621rpx /* 5px -> 3.6621rpx */;
     background-color: #fff;
     border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
+    white-space: nowrap;
+    // overflow: hidden;
+    text-overflow: ellipsis;
   }
   .teachers-select {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 35%;
+    width: 40%;
     height: 36.6211rpx /* 50px -> 36.6211rpx */;
-    max-width: 40%;
+    max-width: 42%;
     .teachers-select-button {
       position: relative;
       margin: 0;
@@ -445,12 +451,13 @@ const onCancel = () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 25%;
+    width: 18%;
     height: 36.6211rpx /* 50px -> 36.6211rpx */;
     .button {
       display: flex;
       justify-content: center;
       align-items: center;
+      width: 100%;
       border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
       color: #fff;
       background-color: rgba(72, 171, 232, 0.8); /* 设置背景色和透明度 */
@@ -460,12 +467,13 @@ const onCancel = () => {
   }
 }
 .main {
-  max-height: 80%;
+  max-height: 88%;
   width: 100%;
   // max-height: 80%; /* 调整 main 容器的高度以确保有足够空间 */
-  padding: 2%;
+  padding: 1% 3%;
   display: flex;
   flex-direction: column;
+
   // justify-content: space-between;
   .tips {
     padding: 7.3242rpx /* 10px -> 7.3242rpx */;

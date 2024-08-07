@@ -5,4 +5,7 @@ export default defineConfig({
   plugins: [
     uni(),
   ],
+  server: {
+    port: 8000, // 指定开发服务器的端口号
+  },
 })

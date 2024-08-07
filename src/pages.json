@@ -9,16 +9,16 @@
 	},
 	"pages": [ //pages数组中第一项表示应用启动页
 		{
-			"path": "pages/login/login",
+			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "login",
+				"navigationBarTitleText": "index",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path": "pages/index/index",
+			"path": "pages/login/login",
 			"style": {
-				"navigationBarTitleText": "index",
+				"navigationBarTitleText": "login",
 				"navigationStyle": "custom"
 			}
 		},

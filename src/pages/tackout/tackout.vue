@@ -1,4 +1,5 @@
 <template>
+  <HeadFill />
   <view class="container">
     <view class="nav">
       <button :class="{ active: selectPage === 'waitOut' }" @click="changePage('waitOut')" class="btn">
@@ -16,12 +17,18 @@
     </view>
     <view class="page">
       <WaitOut v-if="selectPage === 'waitOut'" />
-
+      <TodayOut v-if="selectPage === 'todayOut'" />
+      <StudentInfo v-if="selectPage === 'studentInfo'" />
+      <FamilyInfo v-if="selectPage === 'familyInfo'" />
     </view>
   </view>
 </template>
 <script setup>
+import HeadFill from '../../components/HeadFill/HeadFill.vue'
 import WaitOut from './components/WaitOut.vue'
+import TodayOut from './components/TodayOut.vue'
+import StudentInfo from './components/StudentInfo.vue'
+import FamilyInfo from './components/FamilyInfo.vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 //显示页面(默认-待带出学员)
@@ -45,11 +52,12 @@ onLoad(async e => {
   flex-direction: column;
   background-color: rgb(255, 255, 255);
   .nav {
+    height: 15%;
     // flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 2% 0;
+    margin: 1% 0;
     .btn {
       width: 18%;
       padding: 7.3242rpx /* 10px -> 7.3242rpx */;
@@ -70,7 +78,9 @@ onLoad(async e => {
     }
   }
   .page {
-    flex: 1;
+    height: 80%;
+    overflow: hidden;
+    // flex: 1;
   }
 }
 </style>

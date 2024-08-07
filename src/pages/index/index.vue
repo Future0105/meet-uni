@@ -1,16 +1,17 @@
 <template>
+  <HeadFill />
   <view class="container">
     <view class="box" @click="navigateTo(`/pages/tackout/tackout?page=${'waitOut'}`)">
       <uni-icons type="person" size="50"></uni-icons>
       <text>人员带出</text>
     </view>
-    <view class="box face" @click="toWechatCustmer">
-      <uni-icons type="person" size="50"></uni-icons>
+    <view class="box face" @click="debouncedToWechatCustmer">
+      <uni-icons type="scan" size="50"></uni-icons>
       <text>人脸录入</text>
     </view>
-    <view class="box face">
-      <uni-icons type="person" size="50"></uni-icons>
-      <text>人脸录入</text>
+    <view @click="debouncedInfo" class="box face">
+      <uni-icons type="gear" size="50"></uni-icons>
+      <text>信息</text>
     </view>
     <view class="box face">
       <uni-icons type="person" size="50"></uni-icons>
@@ -19,19 +20,26 @@
   </view>
 </template>
 <script setup>
+import HeadFill from '../../components/HeadFill/HeadFill.vue'
 import { navigateTo } from '@/utils/navigate.js'
-import Tackout from '../tackout/tackout.vue'
-// const navigateTo = url => {
-//   uni.navigateTo({
-//     url
-//   })
-// }
-
+import { debounce, throttle } from 'lodash' //防抖与节流
+//防抖-第一次点击触发  每次触发重新计时 必须停止触发行为2s后才可以再次触发
+//节流-第一次点击触发 开始计时 2s后可再次点击触发，2s内不再触发点击
+const Info = () => {
+  if (uni.getSystemInfoSync().platform === 'android') {
+    window.android.H5ToAndroid('PARAMETER_SETTING')
+  }
+  console.log('完成')
+}
+const debouncedInfo = debounce(Info, 1000, { leading: true, trailing: false })
 const toWechatCustmer = () => {
   if (uni.getSystemInfoSync().platform === 'android') {
-    window.android.H5ToAndroid('000')
+    window.android.H5ToAndroid('FACE_COLLECT')
   }
+  console.log('完成')
 }
+//leading延迟开始前调用  trailing延迟结束后调用
+const debouncedToWechatCustmer = debounce(toWechatCustmer, 1000, { leading: true, trailing: false })
 </script>
 <style scoped lang="scss">
 .container {

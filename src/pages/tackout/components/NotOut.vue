@@ -3,7 +3,7 @@
   <view v-if="showReason" class="notOut">
     <view class="modal" @click.stop>
       <view class="modal-header"
-        >请选择不带出理由（学员：<text style="color: #007aff">{{ noOutName }}</text
+        >请选择不带出理由（学员：<text style="color: #007aff">{{ noOutName.name }}</text
         >）</view
       >
       <view class="modal-content">
@@ -34,40 +34,53 @@
 </template>
 
 <script setup>
+import { getReasons_API } from '@/api/data.js'
 import { ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 
 const props = defineProps({
+  //是否弹出此组件
   showReason: {
     type: Boolean,
     default: false
   },
+  //不带出学员信息
   noOutName: {
-    type: String,
-    default: ''
+    type: Object,
+    default: {}
   }
 })
 
+//返回确认和取消操作给父级
 const emits = defineEmits(['confirm', 'cancel'])
-//原因
-const reasons = ['健康原因', '个人原因', '未完成任务', '不想带']
-//选中的理由
+//不带出理由列表
+const reasons = ref([])
+//选中的不带出理由
 const selectedReason = ref('')
-//其他理由(输入内容)
+//其他理由(自定义输入内容)
 const otherReason = ref('')
+
+//WaitOut页面加载,此组件就会加载,根据showReason是否显示组件
+onLoad(() => {
+  //获取理由列表
+  // const res = await getReasons_API()
+  // reasons.value = res.data
+  reasons.value = ['健康原因', '个人原因', '未完成任务', '不想带', '健康原因']
+})
 
 //选择原因发送变化
 const onChange = event => {
   selectedReason.value = event.detail.value
   if (selectedReason.value !== 'other') {
-    otherReason.value = '' // 如果不是自定义理由，清空文本
+    otherReason.value = '' // 如果不是其他理由，清空自定义理由文本
   }
 }
 
-//确认 不带出
+// 不带出 确认按钮
 const handleConfirm = () => {
-  //自定义原因
+  //选择其他原因
   if (selectedReason.value === 'other') {
-    // 如果为自定义理由，检查是否输入了理由
+    // 如果为其他理由，检查是否输入了理由
     if (otherReason.value.trim() === '') {
       uni.showToast({
         title: '请输入理由',
@@ -77,9 +90,12 @@ const handleConfirm = () => {
       otherReason.value = ''
     } else {
       emits('confirm', otherReason.value)
+      //确认,清空选中理由以及其他理由中自定义文本
       selectedReason.value = ''
+      otherReason.value = ''
     }
   } else if (selectedReason.value) {
+    // 非其他理由
     emits('confirm', selectedReason.value)
     selectedReason.value = ''
   } else {
@@ -89,9 +105,11 @@ const handleConfirm = () => {
     })
   }
 }
-//取消 不带出
+// 不带出 取消按钮
 const handleCancel = () => {
   emits('cancel')
+  selectedReason.value = ''
+  otherReason.value = ''
 }
 </script>
 
@@ -109,9 +127,10 @@ const handleCancel = () => {
   z-index: 5; /* 确保这是页面上最高的z-index */
   .modal {
     background-color: #fff;
+    max-height: 80%;
     width: 60%;
     max-width: 366.2109rpx /* 500px -> 366.2109rpx */;
-    border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
+    border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
     overflow: hidden;
     .modal-header {
       padding: 10.9863rpx /* 15px -> 10.9863rpx */;
@@ -122,7 +141,10 @@ const handleCancel = () => {
       text-align: center;
     }
     .modal-content {
+      max-height: 366.2109rpx /* 500px -> 366.2109rpx */;
       padding: 11.7188rpx /* 16px -> 11.7188rpx */;
+      overflow-y: auto;
+      // background-color: #007aff;
       .radio-label {
         display: block;
         padding: 7.3242rpx /* 10px -> 7.3242rpx */;
@@ -157,7 +179,7 @@ const handleCancel = () => {
         text-align: center;
         color: #333;
         background-color: #f9f9f9;
-        border-left: 1px solid #e7e7e7;
+        border-left: 0.7324rpx /* 1px -> .7324rpx */ solid #e7e7e7;
       }
       .btn.confirm {
         color: #fff;

@@ -1,6 +1,7 @@
 <script>
 export default {
   onLaunch: function () {
+    plus.screen.lockOrientation('landscape-primary') // 强制横屏
     // #ifdef APP-PLUS
     const domModule = uni.requireNativePlugin('dom')
     domModule.addRule('fontFace', {

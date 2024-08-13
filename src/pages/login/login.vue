@@ -1,5 +1,4 @@
 <template>
-  <HeadFill />
   <view class="container">
     <!-- 顶部,左上Logo -->
     <view class="header">
@@ -37,7 +36,7 @@
                 />
               </uni-forms-item>
               <view class="from-login-button">
-                <uni-button @click="submitForm" type="primary">登 录</uni-button>
+                <button @click="submitForm" type="primary">登 录</button>
               </view>
             </uni-forms>
           </view>
@@ -52,6 +51,7 @@
 </template>
 
 <script setup>
+// import HeadFill from '../../components/HeadFill/HeadFill.vue'
 import { userLoginStore } from '@/store/login.js'
 import { ref } from 'vue'
 

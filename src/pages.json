@@ -8,6 +8,13 @@
 		}
 	},
 	"pages": [ //pages数组中第一项表示应用启动页
+			{
+			"path": "pages/tackout/tackout",
+			"style": {
+				"navigationBarTitleText": "tackout",
+				"navigationStyle": "custom"
+			}
+		},
 		{
 			"path": "pages/index/index",
 			"style": {
@@ -23,23 +30,16 @@
 			}
 		},
 		{
-			"path": "pages/tackout/tackout",
-			"style": {
-				"navigationBarTitleText": "tackout",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/TVshow/TVshow",
-			"style": {
-				"navigationBarTitleText": "TVshow",
-				"navigationStyle": "custom"
-			}
-		},
-		{
 			"path": "pages/test/test",
 			"style": {
 				"navigationBarTitleText": "test",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/record/record",
+			"style": {
+				"navigationBarTitleText": "探 访 记 录",
 				"navigationStyle": "custom"
 			}
 		}

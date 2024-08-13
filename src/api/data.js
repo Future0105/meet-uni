@@ -8,6 +8,17 @@ export function getConstellation_API(data = {}) {
     data
   })
 }
+//--------------------------------------------------
+//获取不带出理由列表
+export function getReasons_API() {
+  return request({
+    url: "/",  //接口地址
+  })
+}
+
+
+
+
 
 
 export function login_API(data = {}) {
@@ -24,7 +35,6 @@ export function getTeamData_API(data = {}) {
     data  //队伍名字
   })
 }
-
 
 //获取大队列表
 export function pushTodayList_API(data = {}) {

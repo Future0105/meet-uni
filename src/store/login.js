@@ -1,48 +1,78 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { login_API } from '@/api/data'
+import { login_API, getTeamsList_API, getTeachersList_API } from '@/api/data'
 export const userLoginStore = defineStore("login", () => {
-
-  const loginData = ref({})
-  const login = async ({ username, password }) => {
-    //-------测试---------
-    // let res = await getConstellation_API({
-    //   birthday: '2002-01-05'
-    // })
-
-    // const res = await login_API({ username, password })
-    // if (res.code === 200) 
-    if (username === 'system' && password === 'admin123') {
-      // loginData.value = res.data
-      loginData.value = {
-        loginInfo: {
-          loginTeamValue: 2,  //teamId
-          loginTeamName: '三大队',
-          loginTeacherId: 2, //公用账号要为空
-          loginTeacherName: '张三'
-        },
-        teamList: [
-          { value: 0, text: '一大队' },  //text  大队名称
-          { value: 1, text: '二大队' },
-          { value: 2, text: '三大队' },
-          { value: 3, text: '四大队' },
-          { value: 100, text: '五大队' }
-        ]
-      }
-      uni.navigateTo({
-        url: '/pages/index/index'
+  const loginInfo = ref({}) //登录信息 {Id: 177, RealName: '超级管理员', CollegeId: 2, CollegeName: '重庆市女子监狱'}
+  const teamsList = ref([]) //部门列表
+  const teachersList = ref([]) //教员列表
+  //登录
+  const login = async ({ UserName, Password }) => {
+    const loginInfoRes = await login_API({ UserName, Password })
+    if (loginInfoRes.code === 200) {
+      loginInfo.value = loginInfoRes.data
+      console.log(loginInfo.value)
+      uni.redirectTo({
+        url: '/pages/tackout/tackout'
+      })
+    } else if (loginInfoRes.code === 400) {
+      uni.showToast({
+        title: loginInfoRes.message,
+        icon: 'none'
       })
     } else {
       uni.showToast({
-        title: '登录失败,账号或密码错误',
+        title: '服务器错误',
         icon: 'none'
       })
     }
   }
-
+  const logout = () => {
+    loginInfo.value = {}
+    teamsList.value = []
+    teachersList.value = []
+    uni.redirectTo({
+      url: '/pages/login/login'
+    })
+  }
+  //获取部门列表
+  const getTeamsList = async () => {
+    const teamsListRes = await getTeamsList_API()
+    if (teamsListRes.code === 200) {
+      //map更换为下拉组件的数据字段
+      teamsList.value = teamsListRes.data.map(team => ({
+        value: team.Id,
+        text: team.Name
+      }))
+    } else {
+      uni.showToast({
+        title: '获取部门信息失败',
+        icon: 'none'
+      })
+    }
+    console.log(teamsList.value);
+  }
+  //获取教员列表
+  const getTeachersList = async () => {
+    const teachersListRes = await getTeachersList_API()
+    console.log(teachersListRes);
+    if (teachersListRes.code === 200) {
+      teachersList.value = teachersListRes.data
+    } else {
+      uni.showToast({
+        title: '获取教员信息失败',
+        icon: 'none'
+      })
+    }
+    console.log(teachersList.value);
+  }
   return {
+    loginInfo,
+    teamsList,
+    teachersList,
     login,
-    loginData
+    logout,
+    getTeamsList,
+    getTeachersList
   }
 },
   // TODO: 持久化

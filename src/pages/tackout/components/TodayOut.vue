@@ -1,43 +1,49 @@
 <template>
   <view class="todayOut">
     <view class="header">
-      <view class="team-select">
-        <uni-data-select
-          label="所在大队"
-          placeholder="请选择组织"
-          emptyTips="暂无数据"
-          v-model="loginTeamValue"
-          :clear="false"
-          :localdata="teamList"
-          @change="teamChange"
-        ></uni-data-select>
+      <view class="team-box">
+        <view class="team-select">
+          <uni-data-select
+            label="所在大队"
+            placeholder="请选择组织"
+            emptyTips="暂无数据"
+            v-model="selectTeam"
+            :clear="false"
+            :localdata="teamsList"
+            @change="teamChange"
+          ></uni-data-select>
+        </view>
+        <button class="updata-btn search" @click="updata">
+          <uni-icons type="search" color="#fff" size="40"></uni-icons><text>搜索</text>
+        </button>
+        <button class="updata-btn reload" @click="updata">
+          <uni-icons type="reload" color="#fff" size="40"></uni-icons><text>刷新</text>
+        </button>
       </view>
+
       <view class="header-title">
         <text>今日已带出 {{ outNumber }} 个学员</text>
       </view>
     </view>
     <view class="main">
       <view class="student-list">
-        <uni-table ref="studentTable" border stripe emptyText="暂无更多数据">
-          <uni-tr height="50">
-            <uni-th width="60" align="center">学员姓名</uni-th>
-            <uni-th width="130" align="center">申请会见家属</uni-th>
-            <uni-th width="100" align="center">学员所在大队</uni-th>
-            <uni-th width="100" align="center">学员家庭住址</uni-th>
-            <uni-th width="100" align="center">状态</uni-th>
-            <uni-th width="100" align="center">备注</uni-th>
+        <uni-table border stripe emptyText="暂无更多数据">
+          <uni-tr>
+            <uni-th width="200" align="center">学员姓名</uni-th>
+            <uni-th width="250" align="center">申请会见家属</uni-th>
+            <uni-th width="250" align="center">学员所在大队</uni-th>
+            <uni-th width="400" align="center">学员家庭住址</uni-th>
           </uni-tr>
-          <uni-tr height="50" v-for="(item, index) in studentsList" :key="item.studentId">
-            <uni-td align="center">{{ item.name }}</uni-td>
+          <uni-tr v-for="item in studentsList" :key="item.Id">
+            <uni-td align="center">{{ item.CadetName }}</uni-td>
             <uni-td align="center">
-              <text style="padding: 0 3.6621rpx" v-for="(family, index) in item.familyName" :key="index">
+              {{ item.KinName }}
+              <!-- <text style="padding: 0 3.6621rpx" v-for="(family, index) in item.familyName" :key="index">
                 {{ family }}
-              </text>
+              </text> -->
             </uni-td>
-            <uni-td align="center">{{ item.teamName }}</uni-td>
-            <uni-td align="center">{{ item.address }}</uni-td>
-            <uni-td align="center">{{ item.status }}</uni-td>
-            <uni-td align="center">{{ item.info }}</uni-td>
+            <uni-td align="center">{{ item.CollegeName }}</uni-td>
+            <uni-td align="center">{{ item.DepartPath }}</uni-td>
           </uni-tr>
         </uni-table>
       </view>
@@ -46,226 +52,343 @@
 </template>
 
 <script setup>
+import { getTodayOutList_API } from '@/api/data'
 import { onLoad } from '@dcloudio/uni-app'
-import { ref, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { userLoginStore } from '@/store/login.js'
 //所有队伍列表
-const teamList = [
-  { value: 0, text: '一大队' }, //text  大队名称
-  { value: 1, text: '二大队' },
-  { value: 2, text: '三大队' },
-  { value: 3, text: '四大队' },
-  { value: 100, text: '五大队' }
-]
+const teamsList = ref([])
 //下拉框选中队伍(默认为当前登录大队)
-const loginTeamValue = ref(0)
-
-// 定义定时器变量
-let timer = null
+const selectTeam = ref('')
 //带出学员列表
 const studentsList = ref([])
+//今日带出人数
 const outNumber = ref(0)
-// 定义获取数据的方法
-const getData = () => {
-  studentsList.value = [
-    {
-      studentId: 1001,
-      name: '大毛',
-      familyName: ['大毛父亲'],
-      teamName: '三大队',
-      address: '北京',
-      status: '已带出',
-      info: '无'
-    },
-    {
-      id: 1002,
-      name: '二毛',
-      familyName: ['二毛父亲', '二毛母亲'],
-      teamName: '三大队',
-      address: '上海',
-      status: '已带出',
-      info: '无'
-    },
-    {
-      studentId: 1003,
-      name: '熊大',
-      familyName: ['熊大父亲', '熊大母亲', '熊大儿子'],
-      teamName: '三大队',
-      address: '广州',
-      status: '不带出',
-      info: '不符合会见要求不符合会见要求'
-    },
-    {
-      studentId: 1004,
-      name: '熊二',
-      familyName: ['熊二父亲', '熊二母亲', '熊二儿子', '熊二女儿'],
-      teamName: '三大队',
-      address: '深圳',
-      status: '已带出',
-      info: '无'
-    },
-    {
-      studentId: 1005,
-      name: '张三',
-      familyName: ['父亲'],
-      teamName: '三大队',
-      address: '重庆',
-      status: '不带出',
-      info: '任务未完成'
-    },
-    {
-      studentId: 1006,
-      name: '李四',
-      familyName: ['父亲', '母亲'],
-      teamName: '三大队',
-      address: '四川',
-      status: '已带出',
-      info: '无'
-    },
-    {
-      studentId: 1007,
-      name: '王五',
-      familyName: ['父亲', '母亲', '大舅哥'],
-      teamName: '三大队',
-      address: '台湾',
-      status: '已带出',
-      info: '无'
-    },
-    {
-      studentId: 1008,
-      name: '王五',
-      familyName: ['父亲', '母亲', '大舅哥'],
-      teamName: '三大队',
-      address: '台湾',
-      status: '不带出',
-      info: '身体原因'
-    },
-    {
-      studentId: 1009,
-      name: '王五',
-      familyName: ['父亲', '母亲', '大舅哥'],
-      teamName: '三大队',
-      address: '台湾',
-      status: '不带出',
-      info: '学员拒绝会见'
-    },
-    {
-      studentId: 1010,
-      name: '王五',
-      familyName: ['父亲', '母亲', '大舅哥'],
-      teamName: '三大队',
-      address: '台湾',
-      status: '已带出',
-      info: '无'
-    },
-    {
-      studentId: 1011,
-      name: '王五',
-      familyName: ['父亲', '母亲', '大舅哥'],
-      teamName: '三大队',
-      address: '台湾',
-      status: '已带出',
-      info: '无'
-    },
-    {
-      studentId: 1012,
-      name: '王五',
-      familyName: ['父亲', '母亲', '大舅哥'],
-      teamName: '三大队',
-      address: '台湾',
-      status: '已带出',
-      info: '无'
-    },
-    {
-      studentId: 1013,
-      name: '王五',
-      familyName: ['父亲', '母亲', '大舅哥'],
-      teamName: '三大队',
-      address: '台湾',
-      status: '已带出',
-      info: '无'
-    }
-  ]
-  outNumber.vue = studentsList.value.length
-  console.log('已带出定时器执行中')
-}
-onLoad(() => {
-  const loginStore = userLoginStore()
-  // 当前登录队伍value默认选中
-  // loginTeamValue.value = loginStore.loginData.loginInfo.loginTeamValue
-  // 首次请求数据
-  getData()
-  // 设置定时器，每隔5秒请求一次数据
-  timer = setInterval(getData, 3000)
-})
 
+//获取今日带出学员数据
+const getTodayOutList = async (data = {}) => {
+  const todayOutListRes = await getTodayOutList_API(data)
+  if (todayOutListRes.code === 200) {
+    studentsList.value = todayOutListRes.data
+    if (studentsList.value) {
+      outNumber.value = studentsList.value.length
+    }
+    console.log(studentsList.value)
+  } else {
+    uni.showToast({
+      title: '获取今日带出学员列表失败',
+      icon: 'none'
+    })
+  }
+}
+
+onLoad(async () => {
+  const loginStore = userLoginStore()
+  // 部门列表
+  teamsList.value = loginStore.teamsList
+  //根据登录信息,匹配默认选中部门
+  if (teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId)) {
+    selectTeam.value = teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId).value
+  }
+  await getTodayOutList({ CollegeId: selectTeam.value })
+})
 //改变队伍
 const teamChange = e => {
-  // e === teamList.value
-  // 先查找与 e 匹配的项
-  teamName.value = teamList.value.find(item => item.value === e)
-  // 处理找到的情况
-  if (teamName.value) {
-    // 如果找到了匹配的项,发起请求,获取选择队伍数据
-    // teamName.value = foundItem.text
-    // await getTeamData_API(teamName.value)
-  }
-  // teamName.value = teamList.value.find(item => item.value === e)?.text
-  // await getTeamData_API(teamName.value)
+  selectTeam.value = e
 }
-
-// 在组件卸载时清除定时器
-onUnmounted(() => {
-  if (timer) {
-    clearInterval(timer)
-    timer = null
-    console.log('今日已带出,定时器已清除')
-  }
-})
+const updata = async () => {
+  studentsList.value = [
+    {
+      Id: 1001,
+      CadetName: '张三张三张三张三张三张三张三',
+      KinName: '张三张三张三张三张三张三张三',
+      CollegeName: '一大一大队一大队一大队一大队队',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+    },
+    {
+      Id: 1002,
+      CadetName: '广东省深圳市龙岗区',
+      KinName: '广东省深圳市龙岗区',
+      CollegeName: '广东省深圳市龙岗区',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+    },
+    {
+      Id: 1003,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1004,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1005,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1002,
+      CadetName: '广东省深圳市龙岗区',
+      KinName: '广东省深圳市龙岗区',
+      CollegeName: '广东省深圳市龙岗区',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+    },
+    {
+      Id: 1003,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1004,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1005,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1002,
+      CadetName: '广东省深圳市龙岗区',
+      KinName: '广东省深圳市龙岗区',
+      CollegeName: '广东省深圳市龙岗区',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+    },
+    {
+      Id: 1003,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1004,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1005,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1002,
+      CadetName: '广东省深圳市龙岗区',
+      KinName: '广东省深圳市龙岗区',
+      CollegeName: '广东省深圳市龙岗区',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+    },
+    {
+      Id: 1003,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1004,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    },
+    {
+      Id: 1005,
+      CadetName: '张三',
+      KinName: '张三',
+      CollegeName: '一大队',
+      DepartPath: '广东省深圳市龙岗区'
+    }
+  ]
+  await getTodayOutList({ CollegeId: selectTeam.value })
+}
 </script>
 
 <style lang="scss" scoped>
 .todayOut {
+  width: 100%;
   height: 100%;
-  // position: relative;
+  display: flex;
+  flex-direction: column;
   .header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 12%;
-    margin: 0 3%;
-    padding: 0 2%;
-    background-color: rgba(175, 174, 174, 0.3);
+    justify-content: space-between;
+    // gap: 10.9863rpx /* 15px -> 10.9863rpx */;
+    height: 43.9453rpx /* 60px -> 43.9453rpx */;
+    padding: 7.3242rpx /* 10px -> 7.3242rpx */ 5.8594rpx /* 8px -> 5.8594rpx */;
+    margin: 0 /* 8px -> 5.8594rpx */ 3%;
     border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
+    background-color: rgba(214, 223, 226, 0.3);
     // overflow: hidden;
-    .team-select {
-      width: 35%;
-      // height: 200px;
-      padding: 0 0 0 3.6621rpx /* 5px -> 3.6621rpx */;
-      background-color: #fff;
-      border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
-      // overflow-y: auto;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+    .team-box {
+      display: flex;
+      height: 100%;
+      .team-select {
+        // white-space: nowrap;
+        // overflow: hidden;
+        // text-overflow: ellipsis;
+        display: flex;
+        padding: 0 2.1973rpx /* 3px -> 2.1973rpx */;
+        // background-color: #92c5c7;
+        border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
+        width: 183.1055rpx /* 250px -> 183.1055rpx */;
+        height: 100%;
+        ::v-deep {
+          //组件高度
+          .uni-stat__select {
+            height: 100%;
+          }
+          //左侧文字
+          .uni-label-text {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
+          }
+          // 右侧下拉
+          .uni-select {
+            box-sizing: border-box;
+            // background-color: #00aaff;
+            height: 21.9727rpx /* 30px -> 21.9727rpx */;
+            border: 1.4648rpx /* 2px -> 1.4648rpx */ solid #ffffff;
+          }
+          //下拉箭头
+          uni-text.uni-icons {
+            font-size: 10.9863rpx /* 15px -> 10.9863rpx */ !important;
+            color: #ffffff !important;
+          }
+          //选中项
+          .uni-select__input-text {
+            width: 91.5527rpx /* 125px -> 91.5527rpx */;
+            color: #ffffff;
+            font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+          }
+          //下拉框中列表内容
+          .uni-select__selector-item {
+            box-sizing: border-box;
+            padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+            color: #ffffff;
+            margin: 3.6621rpx /* 5px -> 3.6621rpx */ 2.1973rpx /* 3px -> 2.1973rpx */;
+            height: 20.5078rpx /* 28px -> 20.5078rpx */;
+            line-height: 20.5078rpx /* 28px -> 20.5078rpx */;
+            border-radius: 5px;
+            font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+            background-color: #4bbdf7;
+            // border: 1px solid #e5e5e5;
+            text {
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+          }
+          //下拉最大高度
+          .uni-select__selector-scroll {
+            max-height: 318.6035rpx /* 435px -> 318.6035rpx */;
+          }
+          .uni-select__selector-empty {
+            padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+            margin: 3.6621rpx /* 5px -> 3.6621rpx */ 2.1973rpx /* 3px -> 2.1973rpx */;
+            // background-color: #4bbdf7;
+            font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+            border-radius: 5px;
+          }
+        }
+      }
+      .updata-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+        padding: 0;
+        width: 47.6074rpx /* 65px -> 47.6074rpx */;
+        height: 100%;
+        font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+        border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
+        background-color: #00aaff;
+        color: #fff;
+      }
     }
     .header-title {
       flex: 5;
       max-height: 100%;
       margin-left: 21.9727rpx /* 30px -> 21.9727rpx */;
       font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
-      color: rgb(74, 76, 77);
+      color: rgb(255, 255, 255);
     }
   }
   .main {
-    max-height: 88%;
-    padding: 10.9863rpx /* 15px -> 10.9863rpx */ 3%;
+    flex: 1;
+    padding: 7.3242rpx /* 10px -> 7.3242rpx */ 3%;
     display: flex;
     flex-direction: column;
+    overflow: auto;
     .student-list {
       height: 100%;
-      border: 0.7324rpx /* 1px -> .7324rpx */ #b8b5b5 solid;
+      // border: 0.7324rpx /* 1px -> .7324rpx */ #b8b5b5 solid;
       border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-      overflow-y: auto; /* 添加垂直滚动条 */
+      overflow: auto; /* 添加垂直滚动条 */
+      ::v-deep {
+        //表头
+        .uni-table-th {
+          height: 32.959rpx /* 45px -> 32.959rpx */;
+          font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
+          color: #000;
+          // font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+        }
+        //表格
+        .uni-table-td {
+          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+          line-height: 16.1133rpx /* 22px -> 16.1133rpx */;
+          // height: 29.2969rpx /* 40px -> 29.2969rpx */;
+          // white-space: nowrap !important;
+          // overflow: hidden;
+          // text-overflow: ellipsis;
+        }
+        .checkbox__inner {
+          width: 14.6484rpx /* 20px -> 14.6484rpx */;
+          height: 14.6484rpx /* 20px -> 14.6484rpx */;
+          border: 1.4648rpx /* 2px -> 1.4648rpx */ #007aff solid;
+          overflow: hidden;
+        }
+        .checkbox__inner-icon {
+          box-sizing: border-box;
+          position: absolute;
+          top: -30px;
+          left: 0px;
+          width: 14.6484rpx /* 20px -> 14.6484rpx */;
+          height: 21.9727rpx /* 30px -> 21.9727rpx */;
+          border: 2.1973rpx /* 3px -> 2.1973rpx */ solid #fff;
+        }
+        .checkbox--indeterminate .checkbox__inner-icon {
+          top: 0;
+          left: -3px;
+          width: 14.6484rpx /* 20px -> 14.6484rpx */;
+          height: 14.6484rpx /* 20px -> 14.6484rpx */;
+          // background-color: #c61212;
+        }
+        //暂无数据
+        .uni-table-text {
+          font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+        }
+      }
     }
   }
 }

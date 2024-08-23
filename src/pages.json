@@ -9,17 +9,11 @@
 	},
 	"pages": [ //pages数组中第一项表示应用启动页
 			{
-			"path": "pages/tackout/tackout",
-			"style": {
-				"navigationBarTitleText": "tackout",
-				"navigationStyle": "custom"
-			}
-		},
-		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "index",
 				"navigationStyle": "custom"
+				// "enablePullDownRefresh": false // 禁止下拉刷新
 			}
 		},
 		{
@@ -27,6 +21,24 @@
 			"style": {
 				"navigationBarTitleText": "login",
 				"navigationStyle": "custom"
+				// "enablePullDownRefresh": false // 禁止下拉刷新
+			}
+		},
+
+		{
+			"path": "pages/tackout/tackout",
+			"style": {
+				"navigationBarTitleText": "tackout",
+				"navigationStyle": "custom"
+				// "enablePullDownRefresh": false // 禁止下拉刷新
+			}
+		},
+		{
+			"path": "pages/record/record",
+			"style": {
+				"navigationBarTitleText": "探访记录",
+				"navigationStyle": "custom"
+				// "enablePullDownRefresh": false // 禁止下拉刷新
 			}
 		},
 		{
@@ -34,13 +46,7 @@
 			"style": {
 				"navigationBarTitleText": "test",
 				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/record/record",
-			"style": {
-				"navigationBarTitleText": "探 访 记 录",
-				"navigationStyle": "custom"
+				// "enablePullDownRefresh": false // 禁止下拉刷新
 			}
 		}
 	],
@@ -49,6 +55,7 @@
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8",
+		"enablePullDownRefresh": false,  // 禁止全局下拉刷新
 		"rpxCalcMaxDeviceWidth": 1920, // rpx 计算所支持的最大设备宽度，单位 px，默认值为 960
 		"rpxCalcBaseDeviceWidth": 1024, // rpx 计算使用的基准设备宽度，设备实际宽度超出 rpx 计算所支持的最大设备宽度时将按基准宽度计算，单位 px，默认值为 375
 		"rpxCalcIncludeWidth": 750 // rpx 计算特殊处理的值，始终按实际的设备宽度计算，单位 rpx，默认值为 750

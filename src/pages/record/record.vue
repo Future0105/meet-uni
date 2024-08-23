@@ -1,85 +1,86 @@
 <template>
   <view class="container">
-    <HeadFill />
-    <view class="title">
-      <button class="homeBtn" @click="redirectTo(`/pages/index/index`)">
-        <uni-icons type="home" size="50"></uni-icons>
-      </button>
-      <text>探 访 记 录</text>
+    <view class="layout">
+      <view class="title">
+        <button class="homeBtn" @click="redirectTo(`/pages/index/index`)">
+          <uni-icons type="home" size="50"></uni-icons>
+        </button>
+        <text>探 访 记 录</text>
+      </view>
+      <view class="studentInfo">
+        <view class="header">
+          <view class="search-info">
+            <view class="student-name inp">
+              <text>姓名：</text>
+              <uni-easyinput v-model="searchName" placeholder="请输入学员姓名"></uni-easyinput>
+            </view>
+            <view class="time-start inp">
+              <text>起始时间：</text>
+              <uni-datetime-picker type="date" :clear-icon="true" v-model="searchStartTime" @change="changeStartTime" />
+            </view>
+            <view class="student-address inp">
+              <text>住址：</text>
+              <uni-easyinput v-model="searchAddress" placeholder="请输入家庭住址"></uni-easyinput>
+            </view>
+            <view class="time-end inp">
+              <text>截止时间：</text>
+              <uni-datetime-picker type="date" :clear-icon="true" v-model="searchEndTime" @change="changeEndTime" />
+            </view>
+          </view>
+          <view class="team-select">
+            <uni-data-select
+              label="所在大队"
+              placeholder="请选择组织"
+              emptyTips="暂无数据"
+              v-model="loginTeamValue"
+              :clear="false"
+              :localdata="teamList"
+              @change="teamChange"
+            ></uni-data-select>
+          </view>
+          <view class="search-btn">
+            <button @click="searchBtn">查询</button>
+          </view>
+        </view>
+        <view class="main">
+          <view class="student-list">
+            <uni-table ref="studentTable" border stripe emptyText="暂无更多数据">
+              <uni-tr height="70">
+                <uni-th width="60" align="center">学员姓名</uni-th>
+                <uni-th width="160" align="center">学员身份证号</uni-th>
+                <uni-th width="40" align="center">学员状态</uni-th>
+                <uni-th width="80" align="center">所在大队</uni-th>
+                <uni-th width="80" align="center">探访家属</uni-th>
+                <uni-th width="70" align="center">申请时间</uni-th>
+                <uni-th width="70" align="center">探访时间</uni-th>
+                <uni-th width="40" align="center">探访窗口</uni-th>
+                <uni-th width="70" align="center">操作</uni-th>
+              </uni-tr>
+              <uni-tr height="70" v-for="(item, index) in studentsList" :key="item.studentId">
+                <uni-td align="center">{{ item.name }}</uni-td>
+                <uni-td align="center">{{ item.num }}</uni-td>
+                <uni-td align="center">{{ item.teamName }}</uni-td>
+                <uni-td align="center">{{ item.address }}</uni-td>
+                <uni-td align="center">{{ item.status }}</uni-td>
+                <uni-td align="center">{{ item.info }}</uni-td>
+                <uni-td align="center">{{ item.z }}</uni-td>
+                <uni-td align="center">{{ item.zaidui }}</uni-td>
+                <uni-td>
+                  <view class="video-btn">
+                    <button @click="getVideo" class="video" size="mini">录像回放</button>
+                  </view>
+                </uni-td>
+              </uni-tr>
+            </uni-table>
+          </view>
+        </view>
+      </view>
     </view>
-    <view class="studentInfo">
-      <view class="header">
-        <view class="search-info">
-          <view class="student-name inp">
-            <text>姓名：</text>
-            <uni-easyinput v-model="searchName" placeholder="请输入学员姓名"></uni-easyinput>
-          </view>
-          <view class="time-start inp">
-            <text>起始时间：</text>
-            <uni-datetime-picker type="date" :clear-icon="true" v-model="searchStartTime" @change="changeStartTime" />
-          </view>
-          <view class="student-address inp">
-            <text>住址：</text>
-            <uni-easyinput v-model="searchAddress" placeholder="请输入家庭住址"></uni-easyinput>
-          </view>
-          <view class="time-end inp">
-            <text>截止时间：</text>
-            <uni-datetime-picker type="date" :clear-icon="true" v-model="searchEndTime" @change="changeEndTime" />
-          </view>
-        </view>
-        <view class="team-select">
-          <uni-data-select
-            label="所在大队"
-            placeholder="请选择组织"
-            emptyTips="暂无数据"
-            v-model="loginTeamValue"
-            :clear="false"
-            :localdata="teamList"
-            @change="teamChange"
-          ></uni-data-select>
-        </view>
-        <view class="search-btn">
-          <button @click="searchBtn">查询</button>
-        </view>
-      </view>
-      <view class="main">
-        <view class="student-list">
-          <uni-table ref="studentTable" border stripe emptyText="暂无更多数据">
-            <uni-tr height="70">
-              <uni-th width="60" align="center">学员姓名</uni-th>
-              <uni-th width="160" align="center">学员身份证号</uni-th>
-              <uni-th width="40" align="center">学员状态</uni-th>
-              <uni-th width="80" align="center">所在大队</uni-th>
-              <uni-th width="80" align="center">探访家属</uni-th>
-              <uni-th width="70" align="center">申请时间</uni-th>
-              <uni-th width="70" align="center">探访时间</uni-th>
-              <uni-th width="40" align="center">探访窗口</uni-th>
-              <uni-th width="70" align="center">操作</uni-th>
-            </uni-tr>
-            <uni-tr height="70" v-for="(item, index) in studentsList" :key="item.studentId">
-              <uni-td align="center">{{ item.name }}</uni-td>
-              <uni-td align="center">{{ item.num }}</uni-td>
-              <uni-td align="center">{{ item.teamName }}</uni-td>
-              <uni-td align="center">{{ item.address }}</uni-td>
-              <uni-td align="center">{{ item.status }}</uni-td>
-              <uni-td align="center">{{ item.info }}</uni-td>
-              <uni-td align="center">{{ item.z }}</uni-td>
-              <uni-td align="center">{{ item.zaidui }}</uni-td>
-              <uni-td>
-                <view class="video-btn">
-                  <button @click="getVideo" class="video" size="mini">录像回放</button>
-                </view>
-              </uni-td>
-            </uni-tr>
-          </uni-table>
-        </view>
-      </view>
-    </view></view
-  >
+  </view>
 </template>
 
 <script setup>
-import HeadFill from '../../components/HeadFill/HeadFill.vue'
+// import HeadFill from '../../components/HeadFill/HeadFill.vue'
 import { userLoginStore } from '@/store/login.js'
 import { redirectTo } from '@/utils/to.js'
 import { onLoad, onUnload } from '@dcloudio/uni-app'
@@ -459,112 +460,121 @@ onUnload(clearTimer)
 .container {
   width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: rgb(255, 255, 255);
-  .title {
-    position: relative;
-    width: 100vw;
-    height: 13%;
+  padding-top: 10.9863rpx /* 15px -> 10.9863rpx */;
+  .layout {
+    width: 100%;
+    height: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 29.2969rpx /* 40px -> 29.2969rpx */;
-    font-weight: 700;
-    color: rgb(51, 89, 255);
-    .homeBtn {
+    flex-direction: column;
+    background-image: url('@/static/image/slices/loginBgS.png');
+    //contain按比例缩放,可能不会覆盖整个背景区域
+    //cover按比例缩放以完全覆盖背景区域，可能会裁剪掉部分图像
+    background-size: 100% 100%; /* 图像会拉伸以适应背景区域的大小 */
+    background-position: center; /* 可选：将背景图像居中 */
+    .title {
+      position: relative;
+      width: 100vw;
+      height: 13%;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-      // overflow: hidden;
-      position: absolute;
-      left: 3%;
-      width: 8%;
-      height: 60%;
-    }
-  }
-  .studentInfo {
-    height: 86%;
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 18%;
-      margin: 0 3%;
-      padding: 0 2%;
-      background-color: rgba(175, 174, 174, 0.3);
-      border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-      .search-info {
-        width: 50%;
-        height: 100%;
+      font-size: 29.2969rpx /* 40px -> 29.2969rpx */;
+      font-weight: 700;
+      color: rgb(51, 89, 255);
+      .homeBtn {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        // background-color: aqua;
-        font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-        .inp {
+        justify-content: center;
+        border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
+        // overflow: hidden;
+        position: absolute;
+        left: 3%;
+        width: 8%;
+        height: 60%;
+      }
+    }
+    .studentInfo {
+      height: 86%;
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 18%;
+        margin: 0 3%;
+        padding: 0 2%;
+        background-color: rgba(175, 174, 174, 0.3);
+        border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
+        .search-info {
+          width: 50%;
+          height: 100%;
           display: flex;
           align-items: center;
-          justify-content: center;
-          width: 139.1602rpx /* 190px -> 139.1602rpx */;
-          max-height: 46%;
+          justify-content: flex-start;
+          flex-wrap: wrap;
+          // background-color: aqua;
+          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+          .inp {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 139.1602rpx /* 190px -> 139.1602rpx */;
+            max-height: 46%;
+            // overflow: hidden;
+            &:nth-child(2n) {
+              margin-left: 25.6348rpx /* 35px -> 25.6348rpx */;
+              width: 168.457rpx /* 230px -> 168.457rpx */;
+            }
+          }
+        }
+        .team-select {
+          // flex: 1;
+          width: 219.7266rpx /* 300px -> 219.7266rpx */;
+          margin-right: 3.6621rpx /* 5px -> 3.6621rpx */;
+          padding: 0 0 0 3.6621rpx /* 5px -> 3.6621rpx */;
+          background-color: #ffffff;
+          border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
+          white-space: nowrap;
+          // overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .search-btn {
+          width: 73.2422rpx /* 100px -> 73.2422rpx */;
+          border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
           overflow: hidden;
-          &:nth-child(2n) {
-            margin-left: 25.6348rpx /* 35px -> 25.6348rpx */;
-            width: 168.457rpx /* 230px -> 168.457rpx */;
+          button {
+            color: #fff;
+            font-weight: 600;
+            font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+            background-color: #00aaff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
       }
-      .team-select {
-        // flex: 1;
-        width: 219.7266rpx /* 300px -> 219.7266rpx */;
-        margin-right: 3.6621rpx /* 5px -> 3.6621rpx */;
-        padding: 0 0 0 3.6621rpx /* 5px -> 3.6621rpx */;
-        background-color: #ffffff;
-        border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
-        white-space: nowrap;
-        // overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .search-btn {
-        width: 73.2422rpx /* 100px -> 73.2422rpx */;
-        border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-        overflow: hidden;
-        button {
-          color: #fff;
-          font-weight: 600;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-          background-color: #00aaff;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-    }
-    .main {
-      max-height: 82%;
-      padding: 10.9863rpx /* 15px -> 10.9863rpx */ 3%;
-      display: flex;
-      flex-direction: column;
-      .student-list {
-        height: 100%;
-        border: 1px #b8b5b5 solid;
-        border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-        overflow-y: auto; /* 添加垂直滚动条 */
-        .video-btn {
-          // margin: 0;
-          // padding: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          // background-color: #00aaff;
-          .video {
-            margin: 0;
-            padding: 0;
-            padding: 4.3945rpx /* 6px -> 4.3945rpx */;
-            background-color: #ececec;
+      .main {
+        max-height: 82%;
+        padding: 10.9863rpx /* 15px -> 10.9863rpx */ 3%;
+        display: flex;
+        flex-direction: column;
+        .student-list {
+          height: 100%;
+          border: 1px #b8b5b5 solid;
+          border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
+          overflow-y: auto; /* 添加垂直滚动条 */
+          .video-btn {
+            // margin: 0;
+            // padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            // background-color: #00aaff;
+            .video {
+              margin: 0;
+              padding: 0;
+              padding: 4.3945rpx /* 6px -> 4.3945rpx */;
+              background-color: #ececec;
+            }
           }
         }
       }

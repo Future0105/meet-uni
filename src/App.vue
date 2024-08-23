@@ -1,8 +1,8 @@
 <script>
 export default {
   onLaunch: function () {
-    plus.screen.lockOrientation('landscape-primary') // 强制横屏
     // #ifdef APP-PLUS
+    plus.screen.lockOrientation('landscape-primary') // 强制横屏
     const domModule = uni.requireNativePlugin('dom')
     domModule.addRule('fontFace', {
       'fontFamily': 'graceuiiconfont',
@@ -31,6 +31,7 @@ export default {
 /* 加载自定义样式 */
 @import './custom/custom.scss';
 page {
+  
   background: #f8f8f8;
 }
 </style>

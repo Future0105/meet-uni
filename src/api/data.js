@@ -1,45 +1,82 @@
 import request from '@/utils/request.js'
-
-//birthday	string	必填	年龄格式：2000-01-01
-//根据传入的年龄计算你的生肖、星座 
-export function getConstellation_API(data = {}) {
-  return request({
-    url: "/",
-    data
-  })
-}
-//--------------------------------------------------
-//获取不带出理由列表
-export function getReasons_API() {
-  return request({
-    url: "/",  //接口地址
-  })
-}
-
-
-
-
-
-
+//登录
 export function login_API(data = {}) {
   return request({
-    url: "/userLogin",
-    data   //账号 密码
+    url: "/Pad_Login",
+    data   //账号UserName 密码Password
+  })
+}
+//获取待带出学员
+export function getStudentsList_API(data = {}) {
+  return request({
+    url: "/Pad_GetCboList",
+    data   //不传参-所有学员,可选参数-部门ID  CollegeId
   })
 }
 
-//获取大队列表
-export function getTeamData_API(data = {}) {
+//获取部门列表
+export function getTeamsList_API() {
   return request({
-    url: "/teamname",
-    data  //队伍名字
+    url: "/Pad_GetCollegeList",
   })
 }
 
-//获取大队列表
-export function pushTodayList_API(data = {}) {
+//获取教员列表
+export function getTeachersList_API() {
   return request({
-    url: "/teamname",
-    data  //队伍名字
+    url: "/Pad_GetPolicemanList",
+  })
+}
+//获取不带出理由列表
+export function getReasonsList_API() {
+  return request({
+    url: "/Pad_GetNborList",
+  })
+}
+
+//暂不带出该学员
+export function pushWaitOut_API(data = {}) {
+  return request({
+    url: "/Pad_TempoNoBringOut",
+    data   //Id
+  })
+}
+
+//不带出该学员
+export function pushNotOut_API(data = {}) {
+  return request({
+    url: "/Pad_NoBringOut",
+    data   //Id   NoBringOutReasonId
+  })
+}
+//带出勾选学员
+export function pushTackOut_API(data = {}) {
+  return request({
+    url: "/Pad_BringOut",
+    data   //Ids  PolicemanIds
+  })
+}
+
+// 今日已带出学员列表
+export function getTodayOutList_API(data = {}) {
+  return request({
+    url: "/Pad_GetTodayCboList",
+    data   //CollegeId
+  })
+}
+
+//学员信息列表
+export function getStudentsInfo_API(data = {}) {
+  return request({
+    url: "/Pad_GetCadetList",
+    data   //RealName  DepartPath CollegeId SearchType
+  })
+}
+
+//教员信息列表
+export function getTeachersInfo_API(data = {}) {
+  return request({
+    url: "Pad_GetPolicemanInfoList",
+    data   //RealName PersonNo CollegeId SearchType
   })
 }

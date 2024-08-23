@@ -507,5 +507,5 @@ page, gui-page{min-height:100%;  display:flex; flex-direction:column; flex:1;}
 /* #ifndef APP-NVUE */
 .gui-box-shadow{box-shadow:0px 0px 16rpx #323232;}
 .gui-transition-all{transition:all 0.2s ease-in 0s;}
-::-webkit-scrollbar {display: none;}
+// ::-webkit-scrollbar {display: none;}
 /* #endif */

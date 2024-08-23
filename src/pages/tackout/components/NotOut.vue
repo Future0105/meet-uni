@@ -1,28 +1,27 @@
 <!-- CustomModal.vue -->
 <template>
-  <view v-if="showReason" class="notOut">
+  <view class="notOut">
     <view class="modal" @click.stop>
-      <view class="modal-header"
-        >请选择不带出理由（学员：<text style="color: #007aff">{{ noOutName.name }}</text
-        >）</view
-      >
+      <view class="modal-header">请选择不带出理由</view>
       <view class="modal-content">
         <radio-group @change="onChange">
           <label class="radio-label" v-for="(reason, index) in reasons" :key="index">
-            <radio :value="reason" color="#007aff">&nbsp{{ reason }}</radio>
+            <radio :value="reason" color="#007aff">&nbsp{{ reason.Name }}</radio>
           </label>
+          <!-- ---------------------------------------------------------------------- -->
           <!-- 添加一个自定义理由的选项 -->
-          <label class="radio-label">
+          <!-- <label class="radio-label">
             <radio value="other" color="#007aff">&nbsp其他（请说明理由）</radio>
-          </label>
+          </label> -->
           <!-- 当选中自定义理由时显示文本区域 -->
-          <textarea
+          <!-- <textarea
             v-if="selectedReason === 'other'"
             v-model="otherReason"
             placeholder="请输入理由(最多200字)"
             class="textarea"
             maxlength="200"
-          ></textarea>
+          ></textarea> -->
+          <!-- ----------------------------------------------------------------------- -->
         </radio-group>
       </view>
       <view class="modal-footer">
@@ -34,22 +33,9 @@
 </template>
 
 <script setup>
-import { getReasons_API } from '@/api/data.js'
+import { getReasonsList_API } from '@/api/data.js'
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-
-const props = defineProps({
-  //是否弹出此组件
-  showReason: {
-    type: Boolean,
-    default: false
-  },
-  //不带出学员信息
-  noOutName: {
-    type: Object,
-    default: {}
-  }
-})
 
 //返回确认和取消操作给父级
 const emits = defineEmits(['confirm', 'cancel'])
@@ -60,56 +46,80 @@ const selectedReason = ref('')
 //其他理由(自定义输入内容)
 const otherReason = ref('')
 
-//WaitOut页面加载,此组件就会加载,根据showReason是否显示组件
-onLoad(() => {
-  //获取理由列表
-  // const res = await getReasons_API()
-  // reasons.value = res.data
-  reasons.value = ['健康原因', '个人原因', '未完成任务', '不想带', '健康原因']
+//获取不带出理由列表
+const getReasonsList = async () => {
+  const reasonstRes = await getReasonsList_API()
+  if (reasonstRes.code === 200) {
+    reasons.value = reasonstRes.data
+  } else {
+    uni.showToast({
+      title: '获取不带出理由列表失败',
+      icon: 'none'
+    })
+  }
+  console.log(reasons.value)
+}
+
+//组件加载
+onLoad(async () => {
+  //获取不带出理由列表
+  await getReasonsList()
 })
 
 //选择原因发送变化
 const onChange = event => {
   selectedReason.value = event.detail.value
-  if (selectedReason.value !== 'other') {
-    otherReason.value = '' // 如果不是其他理由，清空自定义理由文本
-  }
+  //-----------------------------------------------------------
+  // if (selectedReason.value !== 'other') {
+  //   otherReason.value = '' // 如果不是其他理由，清空自定义理由文本
+  // }
+  //--------------------------------------------------------
 }
 
 // 不带出 确认按钮
 const handleConfirm = () => {
-  //选择其他原因
-  if (selectedReason.value === 'other') {
-    // 如果为其他理由，检查是否输入了理由
-    if (otherReason.value.trim() === '') {
-      uni.showToast({
-        title: '请输入理由',
-        icon: 'none'
-      })
-      //防止空格输入,清空
-      otherReason.value = ''
-    } else {
-      emits('confirm', otherReason.value)
-      //确认,清空选中理由以及其他理由中自定义文本
-      selectedReason.value = ''
-      otherReason.value = ''
-    }
-  } else if (selectedReason.value) {
+  if (selectedReason.value) {
     // 非其他理由
-    emits('confirm', selectedReason.value)
+    emits('confirm', selectedReason.value.Id)
     selectedReason.value = ''
   } else {
     uni.showToast({
-      title: '请选择一个理由',
+      title: '请选择不带出理由',
       icon: 'none'
     })
   }
+  // //选择其他原因
+  // if (selectedReason.value === 'other') {
+  //   // 如果为其他理由，检查是否输入了理由
+  //   if (otherReason.value.trim() === '') {
+  //     uni.showToast({
+  //       title: '请输入理由',
+  //       icon: 'none'
+  //     })
+  //     //防止空格输入,清空
+  //     otherReason.value = ''
+  //   } else {
+  //     emits('confirm', otherReason.value)
+  //     //确认,清空选中理由以及其他理由中自定义文本
+  //     selectedReason.value = ''
+  //     otherReason.value = ''
+  //   }
+  // } else if (selectedReason.value) {
+  //   // 非其他理由
+  //   emits('confirm', selectedReason.value)
+  //   selectedReason.value = ''
+  // } else {
+  //   uni.showToast({
+  //     title: '请选择一个理由',
+  //     icon: 'none'
+  //   })
+  // }
 }
 // 不带出 取消按钮
 const handleCancel = () => {
   emits('cancel')
   selectedReason.value = ''
-  otherReason.value = ''
+  // otherReason.value = ''
 }
 </script>
 

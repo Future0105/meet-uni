@@ -1,47 +1,44 @@
 <template>
   <view class="container">
-    <HeadFill />
-    <view class="nav">
-      <button class="btn home" @click="redirectTo('/pages/index/index')">
-        <uni-icons type="home" size="50"></uni-icons>
-      </button>
-      <button :class="{ active: selectPage === 'waitOut' }" @click="changePage('waitOut')" class="btn">
-        待带出学员
-      </button>
-      <button :class="{ active: selectPage === 'todayOut' }" @click="changePage('todayOut')" class="btn">
-        今日已带学员
-      </button>
-      <button :class="{ active: selectPage === 'studentInfo' }" @click="changePage('studentInfo')" class="btn">
-        学员信息
-      </button>
-      <button :class="{ active: selectPage === 'familyInfo' }" @click="changePage('familyInfo')" class="btn">
-        家属信息
-      </button>
-    </view>
-    <view class="page">
-      <WaitOut ref="waitOutRef" v-if="selectPage === 'waitOut'" />
-      <TodayOut ref="todayOutRef" v-if="selectPage === 'todayOut'" />
-      <StudentInfo ref="studentInfoRef" v-if="selectPage === 'studentInfo'" />
-      <FamilyInfo ref="familyInfoRef" v-if="selectPage === 'familyInfo'" />
+    <view class="layout">
+      <view class="nav">
+        <button class="btn home" @click="redirectTo('/pages/index/index')">
+          <uni-icons type="home" size="50"></uni-icons>
+          <text>主页</text>
+        </button>
+        <button :class="{ active: selectPage === 'waitOut' }" @click="changePage('waitOut')" class="btn">
+          待带出学员
+        </button>
+        <button :class="{ active: selectPage === 'todayOut' }" @click="changePage('todayOut')" class="btn">
+          今日已带学员
+        </button>
+        <button :class="{ active: selectPage === 'studentsInfo' }" @click="changePage('studentsInfo')" class="btn">
+          学员信息
+        </button>
+        <button :class="{ active: selectPage === 'teachersInfo' }" @click="changePage('teachersInfo')" class="btn">
+          民警信息
+        </button>
+      </view>
+      <view class="page">
+        <WaitOut v-if="selectPage === 'waitOut'" />
+        <TodayOut v-if="selectPage === 'todayOut'" />
+        <StudentsInfo v-if="selectPage === 'studentsInfo'" />
+        <TeachersInfo v-if="selectPage === 'teachersInfo'" />
+      </view>
     </view>
   </view>
 </template>
 <script setup>
-import HeadFill from '../../components/HeadFill/HeadFill.vue'
+// import HeadFill from '../../components/HeadFill/HeadFill.vue'
 import { redirectTo } from '@/utils/to.js'
 import WaitOut from './components/WaitOut.vue'
 import TodayOut from './components/TodayOut.vue'
-import StudentInfo from './components/StudentInfo.vue'
-import FamilyInfo from './components/FamilyInfo.vue'
+import StudentsInfo from './components/StudentsInfo.vue'
+import TeachersInfo from './components/TeachersInfo.vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 //显示页面(默认-待带出学员)
 const selectPage = ref('waitOut')
-// 使用 `ref` 引用子组件实例
-const waitOutRef = ref(null)
-const todayOutRef = ref(null)
-const studentInfoRef = ref(null)
-const familyInfoRef = ref(null)
 //nav点击切换页面
 const changePage = page => {
   //这里集中清除,组件内部就不用再清除
@@ -94,49 +91,63 @@ onLoad(async e => {
 
 <style scoped lang="scss">
 .container {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: rgb(255, 255, 255);
-  .nav {
-    height: 12%;
-    // flex: 1;
+  // padding-top: 10.9863rpx /* 15px -> 10.9863rpx */;
+  .layout {
+    width: 100%;
+    height: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 1% 3%;
-    .btn {
-      margin: 0;
-      width: 18%;
-      height: 85%;
+    flex-direction: column;
+    background-image: url('@/static/image/slices/loginBgS.png');
+    //contain按比例缩放,可能不会覆盖整个背景区域
+    //cover按比例缩放以完全覆盖背景区域，可能会裁剪掉部分图像
+    background-size: 100% 100%; /* 图像会拉伸以适应背景区域的大小 */
+    background-position: center; /* 可选：将背景图像居中 */
+    .nav {
+      height: 14%;
+      // flex: 1;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
-      white-space: nowrap; /* 禁止文本换行 */
-      overflow: hidden; /* 超出部分隐藏 */
-      text-overflow: ellipsis; /* 超出部分显示省略号 */
-      border: 0.7324rpx /* 1px -> .7324rpx */ #c6c1c1 solid;
-      // backdrop-filter: blur(0.7324rpx /* 1px -> .7324rpx */); /* 毛玻璃效果 */
-      border-radius: 10.9863rpx /* 15px -> 10.9863rpx */; /* 圆角边框 */
+      padding: 18.3105rpx /* 25px -> 18.3105rpx */ 3% 7.3242rpx /* 10px -> 7.3242rpx */;
+      // border-bottom: 0.7324rpx /* 1px -> .7324rpx */ solid #ffffff;
+      .btn {
+        margin: 0;
+        padding: 0;
+        width: 16%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+        white-space: nowrap; /* 禁止文本换行 */
+        overflow: hidden; /* 超出部分隐藏 */
+        text-overflow: ellipsis; /* 超出部分显示省略号 */
+        // backdrop-filter: blur(0.7324rpx /* 1px -> .7324rpx */); /* 毛玻璃效果 */
+        border-radius: 10.9863rpx /* 15px -> 10.9863rpx */; /* 圆角边框 */
+      }
+      .active {
+        font-size: 16.1133rpx /* 22px -> 16.1133rpx */;
+        background-color: #00aaff;
+        font-weight: 600;
+        color: white;
+      }
+      .home {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 10%;
+        font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+        gap: 3.6621rpx /* 5px -> 3.6621rpx */; /* 图标和文本之间的间距 */
+      }
     }
-    .active {
-      font-size: 16.1133rpx /* 22px -> 16.1133rpx */;
-      background-color: #00aaff;
-      font-weight: 600;
-      color: white;
-      border: 0.7324rpx /* 1px -> .7324rpx */ #a3d5e2 solid;
+    .page {
+      flex: 1;
+      overflow: hidden;
+      // background-color: #00aaff;
+      // flex: 1;
     }
-    .home {
-      width: 8%;
-      // background-color: #f5f7f8;
-    }
-  }
-  .page {
-    height: 85%;
-    overflow: hidden;
-    // flex: 1;
   }
 }
 </style>

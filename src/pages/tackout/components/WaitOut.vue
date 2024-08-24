@@ -28,12 +28,12 @@
           {{ selectedTeachers }}
         </button>
         <button @click="showSelectTeacher" class="select-button">
-          <uni-icons v-if="showBtn" type="up" color="#b3b3b3" size="30"></uni-icons>
-          <uni-icons v-else="showBtn" type="down" color="#b3b3b3" size="30"></uni-icons>
+          <uni-icons v-if="showBtn" type="up" color="#c2c2c2" size="30"></uni-icons>
+          <uni-icons v-else="showBtn" type="down" color="#c2c2c2" size="30"></uni-icons>
           <text>{{ showBtnText }}</text>
         </button>
         <view v-show="showBtn" class="teacher-list">
-          <checkbox-group @change="selectTeachersList">
+          <checkbox-group v-if="teachersList.length > 0" @change="selectTeachersList">
             <label class="checkbox" v-for="item in teachersList" :key="item.Id">
               <view>
                 <checkbox :value="item.Name" :checked="item.Id === selectedTeacherId" />
@@ -41,6 +41,7 @@
               <view> {{ item.Name }}</view>
             </label>
           </checkbox-group>
+          <text v-else style="color: #000">暂无数据</text>
         </view>
       </view>
       <button class="tack-btn" @click="takeOutSelectedStudents">
@@ -171,13 +172,16 @@ onLoad(async () => {
   await getStudentsList({ CollegeId: selectTeam.value })
   //教员信息
   teachersList.value = loginStore.teachersList
+  console.log(teachersList.value)
   //根据登录信息,匹配默认选中教员
   if (teachersList.value.find(item => item.Id === loginStore.loginInfo.Id)) {
     selectedTeacherId.value = teachersList.value.find(item => item.Id === loginStore.loginInfo.Id).Id
     selectedTeachers.value = teachersList.value.find(item => item.Id === loginStore.loginInfo.Id).Name
     selectedTeachersLength.value = 1
   } else {
-    selectedTeachers.value = loginStore.loginInfo.RealName
+    if (loginStore.loginInfo.RealName) {
+      selectedTeachers.value = loginStore.loginInfo.RealName
+    }
   }
 })
 //下拉框更改部门查询学员
@@ -186,6 +190,7 @@ const teamListChange = async e => {
 }
 //查询和刷新,学员数据
 const updata = async () => {
+  // await getStudentsList({ CollegeId: selectTeam.value })
   studentsList.value = [
     {
       Id: 1001,
@@ -279,8 +284,46 @@ const updata = async () => {
       DepartPath: 'DepartPath'
     }
   ]
-  await getStudentsList({ CollegeId: selectTeam.value })
-
+  teachersList.value = [
+    { Id: 4356, Name: '李莉李莉李莉李莉' },
+    { Id: 4355, Name: '罗啊凯' },
+    { Id: 4350, Name: '李涛啊' },
+    { Id: 4356, Name: '李莉' },
+    { Id: 4355, Name: '罗凯' },
+    { Id: 4350, Name: '李涛' },
+    { Id: 4356, Name: '李莉' },
+    { Id: 4355, Name: '罗凯' },
+    { Id: 4350, Name: '李涛' },
+    { Id: 4356, Name: '李莉' },
+    { Id: 4355, Name: '罗凯' },
+    { Id: 4350, Name: '李涛' }
+  ]
+  teamsList.value = [
+    { value: 331, text: '一大队' },
+    { value: 332, text: '二大队' },
+    { value: 333, text: '三大队' },
+    { value: 334, text: '四大队' },
+    { value: 335, text: '五大队' },
+    { value: 336, text: '六大队' },
+    { value: 1332, text: '七大队' },
+    { value: 1333, text: '八大队' },
+    { value: 1334, text: '九大队' },
+    { value: 1335, text: '十大队' },
+    { value: 1347, text: '十一大队' },
+    { value: 1348, text: '十二大队' },
+    { value: 331, text: '一大队' },
+    { value: 332, text: '二大队' },
+    { value: 333, text: '三大队' },
+    { value: 334, text: '四大队' },
+    { value: 335, text: '五大队' },
+    { value: 336, text: '六大队' },
+    { value: 1332, text: '七大队' },
+    { value: 1333, text: '八大队' },
+    { value: 1334, text: '九大队' },
+    { value: 1335, text: '十大队' },
+    { value: 1347, text: '十一大队' },
+    { value: 1348, text: '十二大队' }
+  ]
   console.log('查询刷新', studentsList.value)
 }
 //选择教员列表按钮
@@ -374,7 +417,7 @@ const selectStudentsList = selections => {
   selectedStudentsLength.value = selections.detail.index.length // 选中学员数量
   // 限制最多选择10个学员
   console.log(selectedStudentsLength.value)
-  if (selectedStudentsLength.value > 9) {
+  if (selectedStudentsLength.value > 20) {
     //使用 nextTick 确保 DOM 更新后清除选中的学员
     //用于在下次 DOM 更新循环结束之后执行延迟回调。
     nextTick(() => {
@@ -507,7 +550,7 @@ const onCancel = () => {
             line-height: 20.5078rpx /* 28px -> 20.5078rpx */;
             border-radius: 5px;
             font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-            background-color: #4bbdf7;
+            background-color: #00aaff;
             // border: 1px solid #e5e5e5;
             text {
               white-space: nowrap;
@@ -517,7 +560,8 @@ const onCancel = () => {
           }
           //下拉最大高度
           .uni-select__selector-scroll {
-            max-height: 318.6035rpx /* 435px -> 318.6035rpx */;
+            background-color: #e4e4e4;
+            max-height: 317.8711rpx /* 434px -> 317.8711rpx */;
           }
           .uni-select__selector-empty {
             padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
@@ -549,8 +593,8 @@ const onCancel = () => {
       align-items: center;
       // justify-content: space-between;
       // width: 212.4023rpx /* 290px -> 212.4023rpx */;
-      max-width: 234.375rpx /* 320px -> 234.375rpx */;
-      overflow: hidden;
+      max-width: 241.6992rpx /* 330px -> 241.6992rpx */;
+      // overflow: hidden;
       height: 100%;
       color: #fff;
       font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
@@ -560,9 +604,10 @@ const onCancel = () => {
       .teachers-select-button {
         padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
         margin: 0;
-        width: 87.8906rpx /* 120px -> 87.8906rpx */;
+        width: 95.2148rpx /* 130px -> 95.2148rpx */;
         height: 100%;
         font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+        color: #000;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -574,7 +619,7 @@ const onCancel = () => {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 3.6621rpx /* 5px -> 3.6621rpx */;
+        gap: 2.1973rpx /* 3px -> 2.1973rpx */;
         padding: 0;
         // margin: 0 0 0 4.3945rpx /* 6px -> 4.3945rpx */;
         margin-left: 4.3945rpx /* 6px -> 4.3945rpx */;
@@ -592,20 +637,44 @@ const onCancel = () => {
         position: absolute;
         z-index: 10;
         top: 33.6914rpx /* 46px -> 33.6914rpx */;
-        left: 58.5938rpx /* 80px -> 58.5938rpx */;
-        background-color: #4eaaf5;
-        padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+        left: 62.2559rpx /* 85px -> 62.2559rpx */;
+        // background-color: rgb(25, 76, 219);
+        background-color: #e4e4e4;
+        padding: 0 3.6621rpx /* 5px -> 3.6621rpx */ 3.6621rpx /* 5px -> 3.6621rpx */;
         margin: 0;
-        width: 87.8906rpx /* 120px -> 87.8906rpx */;
-        max-height: 161.1328rpx /* 220px -> 161.1328rpx */;
-        border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-        overflow-y: scroll; /* 添加垂直滚动条 */
-        scrollbar-width: thin; /* 适用于Firefox */
-        scrollbar-color: #c61212 #e0e0e0; /* 滚动条颜色，适用于Firefox */
+        width: 95.2148rpx /* 130px -> 95.2148rpx */;
+        max-height: 333.252rpx /* 455px -> 333.252rpx */;
+        border-radius: 5px;
+        overflow: auto; /* 添加垂直滚动条 */
+        // scrollbar-width: thin; /* 适用于Firefox */
+        // scrollbar-color: #c61212 #e0e0e0; /* 滚动条颜色，适用于Firefox */
         .checkbox {
           display: flex;
           font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-          padding: 7.3242rpx /* 10px -> 7.3242rpx */ 3.6621rpx /* 5px -> 3.6621rpx */;
+          height: 20.5078rpx /* 28px -> 20.5078rpx */;
+          line-height: 20.5078rpx /* 28px -> 20.5078rpx */;
+          padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+          margin-top: 3.6621rpx /* 5px -> 3.6621rpx */;
+          background-color: #00aaff;
+          border-radius: 5px;
+        }
+        ::v-deep {
+          .uni-label-pointer {
+            // width: 73.2422rpx /* 100px -> 73.2422rpx */;
+            font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .uni-checkbox-input {
+            width: 11.7188rpx /* 16px -> 11.7188rpx */;
+            height: 11.7188rpx /* 16px -> 11.7188rpx */;
+            margin: 0 5.8594rpx /* 8px -> 5.8594rpx */ 0 0;
+            // background-color: #ff5722;
+            svg {
+              width: 35px;
+              height: 35px;
+            }
+          }
         }
       }
     }
@@ -622,7 +691,7 @@ const onCancel = () => {
       color: #000000;
       background-color: #00aaff;
       color: #fff;
-      border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
+      border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
       // backdrop-filter: blur(1.4648rpx /* 2px -> 1.4648rpx */); /* 添加模糊效果 */
       text {
         white-space: nowrap;

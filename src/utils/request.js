@@ -2,7 +2,7 @@
 // const BASE_URL = 'https://tea.qingnian8.com/api/bizhi'
 // const BASE_URL = 'https://zj.v.api.aa1.cn/api/Age-calculation' //生肖
 // const BASE_URL = 'http://192.168.0.118:86/api/WisdomVisit'
-const BASE_URL = 'http://23.84.142.247:90/api/WisdomVisit'
+const DEFAULT_BASE_URL = 'http://23.84.142.247:90/api/WisdomVisit'
 // 请求拦截器
 function requestInterceptor(options) {
   // 从本地存储获取 token
@@ -66,11 +66,13 @@ function request({ url, method = 'GET', data = {}, header = {} }) {
       header
       // header: { ...defaultHeaders, ...header }// 合并默认请求头和传入的请求头
     }
+    // 尝试从本地存储获取 BASE_URL
+    let baseUrl = uni.getStorageSync('BASE_URL') || DEFAULT_BASE_URL;
     options = requestInterceptor(options); // 调用请求拦截器
     // 发起请求
     uni.request({
       ...options, // 展开请求配置对象，将 options 对象中的所有属性展开到新的对象中
-      url: BASE_URL + options.url, // 将 BASE_URL 与 options.url 拼接成完整的请求 URL
+      url: baseUrl + options.url, // 将 BASE_URL 与 options.url 拼接成完整的请求 URL
       success: (response) => {
         const processedResponse = responseInterceptor(response); // 调用响应拦截器处理响应
         if (processedResponse.success) {

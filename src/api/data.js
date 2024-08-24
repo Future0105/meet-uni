@@ -69,14 +69,18 @@ export function getTodayOutList_API(data = {}) {
 export function getStudentsInfo_API(data = {}) {
   return request({
     url: "/Pad_GetCadetList",
+    // RealName=李涛 & DepartPath=重庆市九& CollegeId=0 & SearchType=0 & PageShowNum=7 & PageNum=1
     data   //RealName  DepartPath CollegeId SearchType
+    // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
+
   })
 }
 
 //教员信息列表
 export function getTeachersInfo_API(data = {}) {
   return request({
-    url: "Pad_GetPolicemanInfoList",
-    data   //RealName PersonNo CollegeId SearchType
+    url: "/Pad_GetPolicemanInfoList",
+    data  // RealName=李涛 & PersonNo=100016110& CollegeId=0& SearchType=0
+    // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
   })
 }

@@ -62,6 +62,15 @@ const getReasonsList = async () => {
 
 //组件加载
 onLoad(async () => {
+  reasons.value = [
+    { Name: '不带出' },
+    { Name: '不带出' },
+    { Name: '不带出' },
+    { Name: '不带出' },
+    { Name: '不带出' },
+    { Name: '不带出' },
+
+  ]
   //获取不带出理由列表
   await getReasonsList()
 })
@@ -136,14 +145,18 @@ const handleCancel = () => {
   background-color: rgba(31, 31, 31, 0.6);
   z-index: 5; /* 确保这是页面上最高的z-index */
   .modal {
+    display: flex;
+    flex-direction: column;
     background-color: #fff;
-    max-height: 80%;
-    width: 60%;
+    max-height: 292.9688rpx /* 400px -> 292.9688rpx */;
+    width: 30%;
     max-width: 366.2109rpx /* 500px -> 366.2109rpx */;
     border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-    overflow: hidden;
+    overflow: auto;
     .modal-header {
-      padding: 10.9863rpx /* 15px -> 10.9863rpx */;
+      height: 32.959rpx /* 45px -> 32.959rpx */;
+      line-height: 32.959rpx /* 45px -> 32.959rpx */;
+      // padding: 7.3242rpx /* 10px -> 7.3242rpx */;
       font-size: 14.6484rpx /* 20px -> 14.6484rpx */;
       color: #000000;
       font-weight: 500;
@@ -151,19 +164,20 @@ const handleCancel = () => {
       text-align: center;
     }
     .modal-content {
-      max-height: 366.2109rpx /* 500px -> 366.2109rpx */;
-      padding: 11.7188rpx /* 16px -> 11.7188rpx */;
+      flex: 1;
+      // max-height: 366.2109rpx /* 500px -> 366.2109rpx */;
+      // padding: 11.7188rpx /* 16px -> 11.7188rpx */;
       overflow-y: auto;
       // background-color: #007aff;
       .radio-label {
         display: block;
-        padding: 7.3242rpx /* 10px -> 7.3242rpx */;
-        margin-bottom: 5.8594rpx /* 8px -> 5.8594rpx */;
+        padding: 3.6621rpx /* 5px -> 3.6621rpx */;
+        margin:3.6621rpx /* 5px -> 3.6621rpx */;
         background-color: #e9e9e9;
         border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
       }
       .radio-label radio {
-        font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+        font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
@@ -181,19 +195,22 @@ const handleCancel = () => {
       }
     }
     .modal-footer {
+      height: 29.2969rpx /* 40px -> 29.2969rpx */;
       display: flex;
+      align-items: center;
       justify-content: space-around;
       .btn {
         flex-grow: 1;
-        padding: 7.3242rpx /* 10px -> 7.3242rpx */;
+        // padding: 3.6621rpx /* 5px -> 3.6621rpx */;
         text-align: center;
         color: #333;
-        background-color: #f9f9f9;
-        border-left: 0.7324rpx /* 1px -> .7324rpx */ solid #e7e7e7;
+        font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+        background-color: #c0c4cc;
+        // border-left: 0.7324rpx /* 1px -> .7324rpx */ solid #e7e7e7;
       }
       .btn.confirm {
         color: #fff;
-        background-color: #007aff;
+        background-color: #00aaff;
       }
     }
   }

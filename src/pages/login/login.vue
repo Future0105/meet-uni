@@ -3,7 +3,7 @@
     <view class="layout">
       <!-- 顶部,左上Logo -->
       <view class="header">
-        <image class="logo-img" src="@/static/image/logo/bigpic.png" mode="widthFix" />
+        <image @click="logoClick" class="logo-img" src="@/static/image/logo/bigpic.png" mode="widthFix" />
       </view>
       <!-- 主体 -->
       <view class="main">
@@ -40,6 +40,19 @@
         <text>技术支持：重庆云祥晟科技有限公司</text>
       </view>
     </view>
+    <uni-popup ref="popup" :mask-click="false" type="center">
+      <view class="popup-content">
+        <view class="popup-title">IP地址设置</view>
+
+        <view class="popup-input">
+          <uni-easyinput v-model="newBaseUrl" placeholder="请输入IP地址" />
+        </view>
+        <view class="popup-btn">
+          <button class="btn-cancel" @click="handleCancel">取消</button>
+          <button class="btn-confirm" @click="handleConfirm">确认</button>
+        </view>
+      </view>
+    </uni-popup>
   </view>
 </template>
 
@@ -53,6 +66,55 @@ const formData = ref({
   UserName: '', //账号
   Password: '' //密码
 })
+const clickCount = ref(0)
+const popup = ref(null)
+const newBaseUrl = ref('')
+const logoClick = () => {
+  clickCount.value++
+  if (clickCount.value === 6) {
+    // 当点击次数达到六次时，显示弹窗
+    showPopup()
+    // 重置计数器
+    clickCount.value = 0
+  }
+}
+const showPopup = () => {
+  popup.value.open()
+}
+
+const handleCancel = () => {
+  popup.value.close()
+  newBaseUrl.value = ''
+}
+const setIP = () => {
+  if (uni.getSystemInfoSync().platform === 'android') {
+    window.android.H5ToAndroid(
+      JSON.stringify({
+        type: 'UPDATA_URL',
+        url: newBaseUrl.value
+      })
+    )
+  }
+}
+
+const handleConfirm = () => {
+  if (newBaseUrl.value) {
+    setIP()
+    // 关闭弹窗
+    handleCancel()
+  } else {
+    uni.showToast({
+      title: '请输入有效的IP地址',
+      icon: 'none',
+      duration: 2000
+    })
+  }
+}
+// const getBaseUrl = () => {
+//   if (uni.getSystemInfoSync().platform === 'android') {
+//     window.android.H5ToAndroid('FACE_COLLECT')
+//   }
+// }
 onLoad(async () => {
   loginStore.getTeamsList()
   loginStore.getTeachersList()
@@ -92,6 +154,7 @@ const submitForm = () => {
       console.log('表单校验失败', error)
     })
 }
+
 // @blur 验证单个字段
 // const validateField = fieldName => {
 //   form.value.validateField(fieldName).catch(error => {
@@ -205,6 +268,69 @@ const submitForm = () => {
       align-items: center;
       font-size: 10.9863rpx /* 15px -> 10.9863rpx */;
       color: #fff;
+    }
+  }
+}
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 168.457rpx /* 230px -> 168.457rpx */;
+  // height: 146.4844rpx /* 200px -> 146.4844rpx */;
+  padding: 20px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  .popup-title {
+    font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+    height: 29.2969rpx /* 40px -> 29.2969rpx */;
+    line-height: 29.2969rpx /* 40px -> 29.2969rpx */;
+    color: #000000;
+  }
+  .popup-input {
+    width: 146.4844rpx /* 200px -> 146.4844rpx */;
+    ::v-deep {
+      .uni-easyinput__placeholder-class {
+        font-size: 10.2539rpx /* 14px -> 10.2539rpx */;
+        color: #8f8f8f;
+      }
+      .uni-easyinput__content-input {
+        height: 21.9727rpx /* 30px -> 21.9727rpx */;
+        font-size: 10.2539rpx /* 14px -> 10.2539rpx */;
+        // border: 2px solid #aaaaaa;
+      }
+      .is-input-border {
+        border: 2px solid #000000;
+        border-color: #c0c4cc !important;
+      }
+      .is-focused {
+        border-color: rgb(0, 94, 255) !important;
+      }
+      .uniui-clear {
+        font-size: 14.6484rpx /* 20px -> 14.6484rpx */ !important;
+      }
+    }
+  }
+  .popup-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 43.9453rpx /* 60px -> 43.9453rpx */;
+    button {
+      width: 65.918rpx /* 90px -> 65.918rpx */;
+      height: 25.6348rpx /* 35px -> 25.6348rpx */;
+      line-height: 25.6348rpx /* 35px -> 25.6348rpx */;
+    }
+    .btn-cancel {
+      color: #fff;
+      font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+      // background-color: #e9b940;
+      background-color: #c0c4cc;
+    }
+    .btn-confirm {
+      color: #fff;
+      font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+      background-color: #00aaff;
     }
   }
 }

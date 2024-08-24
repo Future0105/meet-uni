@@ -218,7 +218,7 @@ const updata = async () => {
       DepartPath: '广东省深圳市龙岗区'
     }
   ]
-  await getTodayOutList({ CollegeId: selectTeam.value })
+  // await getTodayOutList({ CollegeId: selectTeam.value })
 }
 </script>
 
@@ -301,7 +301,8 @@ const updata = async () => {
           }
           //下拉最大高度
           .uni-select__selector-scroll {
-            max-height: 318.6035rpx /* 435px -> 318.6035rpx */;
+            background-color: #e4e4e4;
+            max-height: 317.8711rpx /* 434px -> 317.8711rpx */;
           }
           .uni-select__selector-empty {
             padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;

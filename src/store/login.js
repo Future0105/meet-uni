@@ -54,7 +54,6 @@ export const userLoginStore = defineStore("login", () => {
   //获取教员列表
   const getTeachersList = async () => {
     const teachersListRes = await getTeachersList_API()
-    console.log(teachersListRes);
     if (teachersListRes.code === 200) {
       teachersList.value = teachersListRes.data
     } else {

@@ -47,17 +47,17 @@
             <uni-th width="90" align="center">入所时间</uni-th>
             <uni-th width="90" align="center">解教时间</uni-th>
             <uni-th width="20" align="center">操作</uni-th> -->
-            <uni-th width="120" align="center">姓名</uni-th>
-            <uni-th width="300" align="center">身份证号</uni-th>
-            <uni-th width="90" align="center">性别</uni-th>
-            <uni-th width="300" align="center">家庭住址</uni-th>
-            <uni-th width="150" align="center">所在大队</uni-th>
-            <uni-th width="100" align="center">关注等级</uni-th>
-            <uni-th width="100" align="center">学员状态</uni-th>
-            <uni-th width="100" align="center">在队状态</uni-th>
-            <uni-th width="180" align="center">入所时间</uni-th>
-            <uni-th width="180" align="center">解教时间</uni-th>
-            <uni-th width="0" align="center">操作</uni-th>
+            <uni-th width="95" align="center">姓名</uni-th>
+            <uni-th width="265" align="center">身份证号</uni-th>
+            <uni-th width="70" align="center">性别</uni-th>
+            <uni-th width="250" align="center">家庭住址</uni-th>
+            <uni-th width="130" align="center">所在大队</uni-th>
+            <uni-th width="75" align="center">关注等级</uni-th>
+            <uni-th width="75" align="center">学员状态</uni-th>
+            <uni-th width="75" align="center">在队状态</uni-th>
+            <uni-th width="150" align="center">入所时间</uni-th>
+            <uni-th width="150" align="center">解教时间</uni-th>
+            <uni-th width="120" align="center">操作</uni-th>
           </uni-tr>
           <uni-tr v-for="item in paginatedData" :key="item.Id">
             <uni-td align="center">{{ item.RealName }}</uni-td>
@@ -122,13 +122,14 @@ const showData = ref([
 const show = ref(showData.value[0].value)
 
 //一页十条
-const pageSize = 7
+const pageSize = 6
 // 当前页码
 const pageCurrent = ref(1)
 //数据总数
+// const total = ref(0)
 const total = computed(() => studentsList.value.length)
-// //总页数,Math.ceil() 函数将结果向上取整
-// const totalPages = computed(() => Math.ceil(totalItems.value / pageSize))
+//总页数,Math.ceil() 函数将结果向上取整
+const totalPages = computed(() => Math.ceil(totalItems.value / pageSize))
 
 // 计算属性，用于获取当前页的数据
 const paginatedData = computed(() => {
@@ -136,17 +137,12 @@ const paginatedData = computed(() => {
   const end = pageCurrent.value * pageSize
   return studentsList.value.slice(start, end)
 })
-
-// 页码变化时的处理函数
-const changePage = page => {
-  pageCurrent.value = page.current
-}
-
 //获取学员信息
 const getStudentsInfo = async (data = {}) => {
   const studentsInfoRes = await getStudentsInfo_API(data)
   console.log(data)
   if (studentsInfoRes.code === 200) {
+    total.value = studentsInfoRes.message
     studentsList.value = studentsInfoRes.data
     console.log(studentsList.value)
   } else {
@@ -155,6 +151,19 @@ const getStudentsInfo = async (data = {}) => {
       icon: 'none'
     })
   }
+}
+// 页码变化时的处理函数
+const changePage = async page => {
+  pageCurrent.value = page.current
+  await getStudentsInfo({
+    RealName: searchName.value,
+    DepartPath: searchAddress.value,
+    CollegeId: selectTeam.value,
+    SearchType: show.value,
+    // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
+    PageShowNum: pageSize,
+    PageNum: pageCurrent.value
+  })
 }
 
 onLoad(async () => {
@@ -169,7 +178,10 @@ onLoad(async () => {
     RealName: searchName.value,
     DepartPath: searchAddress.value,
     CollegeId: selectTeam.value,
-    SearchType: show.value
+    SearchType: show.value,
+    // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
+    PageShowNum: pageSize,
+    PageNum: pageCurrent.value
   })
 })
 //改变队伍
@@ -187,11 +199,11 @@ const updata = async () => {
       AttentLevelName: '一级一级',
       CadetStateName: '正常一级',
       CollegeName: '一大一大队队',
-      DepartPath: '重庆市九龙坡区华岩重庆市九龙坡区华岩镇西站村9社203号镇西站村9社203号',
+      DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
       FrozenDateTime: '2020-01-10 00:00:00',
-      Id: 50024442000101010001,
+      Id: 500244420001010100,
       InTeamStateName: '在所',
-      RealName: '王二山',
+      RealName: '王二大山',
       RoundTime: '2024-08-31 00:00:00',
       Sex: '男'
     },
@@ -352,11 +364,15 @@ const updata = async () => {
       Sex: '男'
     }
   ]
+  pageCurrent.value = 1
   await getStudentsInfo({
     RealName: searchName.value,
     DepartPath: searchAddress.value,
     CollegeId: selectTeam.value,
-    SearchType: show.value
+    SearchType: show.value,
+    // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
+    PageShowNum: pageSize,
+    PageNum: pageCurrent.value
   })
 }
 //人脸采集 防抖必须停止触发行为后才可以再次触发
@@ -431,6 +447,7 @@ const getFace = debounce(
           .uni-easyinput__content-input {
             height: 21.9727rpx /* 30px -> 21.9727rpx */;
             font-size: 10.2539rpx /* 14px -> 10.2539rpx */;
+            padding-left: 5px !important;
           }
           .uniui-clear {
             font-size: 14.6484rpx /* 20px -> 14.6484rpx */ !important;
@@ -497,7 +514,8 @@ const getFace = debounce(
         }
         //下拉最大高度
         .uni-select__selector-scroll {
-          max-height: 318.6035rpx /* 435px -> 318.6035rpx */;
+          background-color: #e4e4e4;
+          max-height: 317.8711rpx /* 434px -> 317.8711rpx */;
         }
         .uni-select__selector-empty {
           padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
@@ -552,6 +570,7 @@ const getFace = debounce(
     flex-direction: column;
     overflow: hidden;
     .student-list {
+      width: 100%;
       // max-height: 100%;
       // border: 0.7324rpx /* 1px -> .7324rpx */ #b8b5b5 solid;
       border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
@@ -612,7 +631,7 @@ const getFace = debounce(
           width: 43.9453rpx /* 60px -> 43.9453rpx */;
           margin: 0;
           padding: 0;
-          padding: 4.3945rpx /* 6px -> 4.3945rpx */;
+          padding: 3.6621rpx /* 5px -> 3.6621rpx */;
           background-color: rgba(0, 157, 255, 0.1);
           font-size: 8.7891rpx /* 12px -> 8.7891rpx */;
           color: #00aaff;

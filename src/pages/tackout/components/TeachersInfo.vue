@@ -40,16 +40,16 @@
     <view class="main">
       <view class="teacher-list">
         <uni-table border stripe emptyText="暂无更多数据">
-          <uni-tr height="70">
-            <uni-th width="65" align="center">姓名</uni-th>
-            <uni-th width="165" align="center">警号</uni-th>
-            <uni-th width="50" align="center">重名标识</uni-th>
-            <uni-th width="100" align="center">性别</uni-th>
-            <uni-th width="100" align="center">所在部门</uni-th>
-            <uni-th width="50" align="center">联系电话</uni-th>
-            <uni-th width="80" align="center">操作</uni-th>
+          <uni-tr>
+            <uni-th width="100" align="center">姓名</uni-th>
+            <uni-th width="180" align="center">警号</uni-th>
+            <uni-th width="120" align="center">重名标识</uni-th>
+            <uni-th width="60" align="center">性别</uni-th>
+            <uni-th width="150" align="center">所在部门</uni-th>
+            <uni-th width="180" align="center">联系电话</uni-th>
+            <uni-th width="120" align="center">操作</uni-th>
           </uni-tr>
-          <uni-tr height="70" v-for="item in paginatedData" :key="item.Id">
+          <uni-tr v-for="item in paginatedData" :key="item.Id">
             <uni-td align="center">{{ item.RealName }}</uni-td>
             <uni-td align="center">{{ item.PersonNo }}</uni-td>
             <uni-td align="center">{{ item.Remark }}</uni-td>
@@ -100,11 +100,20 @@ const showData = ref([
   }
 ])
 const show = ref(showData.value[0].value)
+//一页数据量
+const pageSize = 7
+// 当前页码
+const pageCurrent = ref(1)
+//数据总数
+// const total = ref(0)
+const total = computed(() => teachersList.value.length)
 //获取民警信息
 const getTeachersInfo = async (data = {}) => {
   const teachersInfoRes = await getTeachersInfo_API(data)
   if (teachersInfoRes.code === 200) {
+    total.value = teachersInfoRes.message
     teachersList.value = teachersInfoRes.data
+    console.log(teachersList.value)
   } else {
     uni.showToast({
       title: '获取民警信息失败',
@@ -113,27 +122,6 @@ const getTeachersInfo = async (data = {}) => {
   }
 }
 
-onLoad(async () => {
-  const loginStore = userLoginStore()
-  // 部门列表
-  teamsList.value = loginStore.teamsList
-  //根据登录信息,匹配默认选中部门
-  if (teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId)) {
-    selectTeam.value = teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId).value
-  }
-  await getTeachersInfo({
-    RealName: searchName.value,
-    PersonNo: searchTeacherId.value,
-    CollegeId: selectTeam.value,
-    SearchType: show.value
-  })
-})
-//一页数据量
-const pageSize = 7
-// 当前页码
-const pageCurrent = ref(1)
-//数据总数
-const total = computed(() => teachersList.value.length)
 // //总页数,Math.ceil() 函数将结果向上取整
 // const totalPages = computed(() => Math.ceil(totalItems.value / pageSize))
 
@@ -145,9 +133,36 @@ const paginatedData = computed(() => {
 })
 
 // 页码变化时的处理函数
-const changePage = page => {
+const changePage = async page => {
   pageCurrent.value = page.current
+  await getTeachersInfo({
+    RealName: searchName.value,
+    PersonNo: searchTeacherId.value,
+    CollegeId: selectTeam.value,
+    SearchType: show.value,
+    PageShowNum: pageSize,
+    PageNum: pageCurrent.value
+  })
 }
+
+onLoad(async () => {
+  const loginStore = userLoginStore()
+  // 部门列表
+  teamsList.value = loginStore.teamsList
+  //根据登录信息,匹配默认选中部门
+  if (teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId)) {
+    selectTeam.value = teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId).value
+  }
+  // RealName=李涛 & PersonNo=100016110& CollegeId=0& SearchType=0
+  await getTeachersInfo({
+    RealName: searchName.value,
+    PersonNo: searchTeacherId.value,
+    CollegeId: selectTeam.value,
+    SearchType: show.value,
+    PageShowNum: pageSize,
+    PageNum: pageCurrent.value
+  })
+})
 
 //改变队伍
 const teamChange = e => {
@@ -158,12 +173,121 @@ const showDataChange = e => {
   show.value = e.detail.value
 }
 const updata = async () => {
+  // await getTeachersInfo({
+  //   RealName: '李涛',
+  //   PersonNo: '100016110',
+  //   CollegeId: 0,
+  //   SearchType: 0
+  // })
+
+  teachersList.value = [
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    }
+  ]
+  pageCurrent.value = 1
   await getTeachersInfo({
     RealName: searchName.value,
     PersonNo: searchTeacherId.value,
     CollegeId: selectTeam.value,
-    SearchType: show.value
+    SearchType: show.value,
+    PageShowNum: pageSize,
+    PageNum: pageCurrent.value
   })
+  // uni
+  //   .request({
+  //     url: `http://23.84.142.247:90/api/WisdomVisit/Pad_GetPolicemanInfoList?RealName=''&SearchType=0`
+  //   })
+  //   .then(res => {
+  //     console.log('民警信息获取', res)
+  //   })
 }
 //人脸采集
 //leading延迟开始前调用  trailing延迟结束后调用
@@ -303,7 +427,8 @@ const getFace = debounce(
         }
         //下拉最大高度
         .uni-select__selector-scroll {
-          max-height: 318.6035rpx /* 435px -> 318.6035rpx */;
+          background-color: #e4e4e4;
+          max-height: 317.8711rpx /* 434px -> 317.8711rpx */;
         }
         .uni-select__selector-empty {
           padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
@@ -418,7 +543,7 @@ const getFace = debounce(
           width: 43.9453rpx /* 60px -> 43.9453rpx */;
           margin: 0;
           padding: 0;
-          padding: 4.3945rpx /* 6px -> 4.3945rpx */;
+          padding: 3.6621rpx /* 5px -> 3.6621rpx */;
           background-color: rgba(0, 157, 255, 0.1);
           font-size: 8.7891rpx /* 12px -> 8.7891rpx */;
           color: #00aaff;

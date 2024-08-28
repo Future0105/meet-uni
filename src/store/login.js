@@ -1,16 +1,16 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { login_API, getTeamsList_API, getTeachersList_API } from '@/api/data'
+import { login_API, getTeamsList_API } from '@/api/data' //getTeachersList_API
 export const userLoginStore = defineStore("login", () => {
   const loginInfo = ref({}) //登录信息 {Id: 177, RealName: '超级管理员', CollegeId: 2, CollegeName: '重庆市女子监狱'}
   const teamsList = ref([]) //部门列表
-  const teachersList = ref([]) //教员列表
+  // const teachersList = ref([]) //教员列表
   //登录
   const login = async ({ UserName, Password }) => {
     const loginInfoRes = await login_API({ UserName, Password })
     if (loginInfoRes.code === 200) {
       loginInfo.value = loginInfoRes.data
-      console.log(loginInfo.value)
+      // console.log(loginInfo.value)
       uni.redirectTo({
         url: '/pages/tackout/tackout'
       })
@@ -21,7 +21,7 @@ export const userLoginStore = defineStore("login", () => {
       })
     } else {
       uni.showToast({
-        title: '服务器错误',
+        title: '未连接到服务器',
         icon: 'none'
       })
     }
@@ -29,7 +29,7 @@ export const userLoginStore = defineStore("login", () => {
   const logout = () => {
     loginInfo.value = {}
     teamsList.value = []
-    teachersList.value = []
+    // teachersList.value = []
     uni.redirectTo({
       url: '/pages/login/login'
     })
@@ -49,29 +49,29 @@ export const userLoginStore = defineStore("login", () => {
         icon: 'none'
       })
     }
-    console.log(teamsList.value);
+    // console.log(teamsList.value);
   }
-  //获取教员列表
-  const getTeachersList = async () => {
-    const teachersListRes = await getTeachersList_API()
-    if (teachersListRes.code === 200) {
-      teachersList.value = teachersListRes.data
-    } else {
-      uni.showToast({
-        title: '获取教员信息失败',
-        icon: 'none'
-      })
-    }
-    console.log(teachersList.value);
-  }
+  // //获取教员列表
+  // const getTeachersList = async () => {
+  //   const teachersListRes = await getTeachersList_API()
+  //   if (teachersListRes.code === 200) {
+  //     teachersList.value = teachersListRes.data
+  //   } else {
+  //     uni.showToast({
+  //       title: '获取教员信息失败',
+  //       icon: 'none'
+  //     })
+  //   }
+  //   // console.log(teachersList.value);
+  // }
   return {
     loginInfo,
     teamsList,
-    teachersList,
+    // teachersList,
     login,
     logout,
     getTeamsList,
-    getTeachersList
+    // getTeachersList
   }
 },
   // TODO: 持久化

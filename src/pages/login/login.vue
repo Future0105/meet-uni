@@ -5,8 +5,21 @@
       <view class="header">
         <image @click="logoClick" class="logo-img" src="@/static/image/logo/bigpic.png" mode="widthFix" />
       </view>
+      <uni-popup ref="popup" :mask-click="false" type="center">
+        <view class="popup-content">
+          <view class="popup-title">IP地址设置</view>
+
+          <view class="popup-input">
+            <uni-easyinput v-model="newBaseUrl" placeholder="请输入IP地址" />
+          </view>
+          <view class="popup-btn">
+            <button class="btn-cancel" @click="handleCancel">取消</button>
+            <button class="btn-confirm" @click="handleConfirm">确认</button>
+          </view>
+        </view>
+      </uni-popup>
       <!-- 主体 -->
-      <view class="main">
+      <view class="main" :class="{ isInp: isFocusInp }">
         <!-- 主体左部,img -->
         <view class="layout-left">
           <image class="left-bgimg" src="@/static/image/slices/loginImgS.png" mode="widthFix" />
@@ -22,10 +35,21 @@
               <!-- 表单组件 -->
               <uni-forms :model="formData" ref="form" :rules="rules" label-position="top">
                 <uni-forms-item label="账号" name="UserName">
-                  <uni-easyinput v-model="formData.UserName" placeholder="请输入登录账号" />
+                  <uni-easyinput
+                    @focus="focusInp"
+                    @blur="blurInp"
+                    v-model="formData.UserName"
+                    placeholder="请输入登录账号"
+                  />
                 </uni-forms-item>
                 <uni-forms-item label="密码" name="Password">
-                  <uni-easyinput v-model="formData.Password" placeholder="请输入登录密码" type="password" />
+                  <uni-easyinput
+                    @focus="focusInp"
+                    @blur="blurInp"
+                    v-model="formData.Password"
+                    placeholder="请输入登录密码"
+                    type="password"
+                  />
                 </uni-forms-item>
                 <view class="from-login-button">
                   <button class="login-btn" @click="submitForm">登 录</button>
@@ -40,25 +64,12 @@
         <text>技术支持：重庆云祥晟科技有限公司</text>
       </view>
     </view>
-    <uni-popup ref="popup" :mask-click="false" type="center">
-      <view class="popup-content">
-        <view class="popup-title">IP地址设置</view>
-
-        <view class="popup-input">
-          <uni-easyinput v-model="newBaseUrl" placeholder="请输入IP地址" />
-        </view>
-        <view class="popup-btn">
-          <button class="btn-cancel" @click="handleCancel">取消</button>
-          <button class="btn-confirm" @click="handleConfirm">确认</button>
-        </view>
-      </view>
-    </uni-popup>
   </view>
 </template>
 
 <script setup>
 import { userLoginStore } from '@/store/login.js'
-import { onLoad } from '@dcloudio/uni-app'
+// import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 const loginStore = userLoginStore()
 //登录表单数据
@@ -66,6 +77,15 @@ const formData = ref({
   UserName: '', //账号
   Password: '' //密码
 })
+const isFocusInp = ref(false)
+const focusInp = () => {
+  isFocusInp.value = true
+  // console.log('focusInp')
+}
+const blurInp = () => {
+  isFocusInp.value = false
+  // console.log('blurInp')
+}
 const clickCount = ref(0)
 const popup = ref(null)
 const newBaseUrl = ref('')
@@ -115,10 +135,6 @@ const handleConfirm = () => {
 //     window.android.H5ToAndroid('FACE_COLLECT')
 //   }
 // }
-onLoad(async () => {
-  loginStore.getTeamsList()
-  loginStore.getTeachersList()
-})
 //表单组件验证规则
 const rules = {
   UserName: {
@@ -151,7 +167,7 @@ const submitForm = () => {
     })
     .catch(error => {
       ////校验失败
-      console.log('表单校验失败', error)
+      // console.log('表单校验失败', error)
     })
 }
 
@@ -235,7 +251,7 @@ const submitForm = () => {
           }
           .form-body {
             width: 100%;
-            margin-top: 15px;
+            margin-top: 5px;
             ::v-deep {
               .uni-forms-item__label {
                 color: #fff;
@@ -243,14 +259,20 @@ const submitForm = () => {
               }
             }
             .from-login-button {
-              margin-top: 21.9727rpx /* 30px -> 21.9727rpx */;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-top: 14.6484rpx /* 20px -> 14.6484rpx */;
               width: 100%;
-              height: 21.9727rpx /* 30px -> 21.9727rpx */;
+              height: 25.6348rpx /* 35px -> 25.6348rpx */;
               .login-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 width: 100%;
-                height: 21.9727rpx /* 30px -> 21.9727rpx */;
-                line-height: 21.9727rpx /* 30px -> 21.9727rpx */;
-                border-radius: 10.9863rpx /* 15px -> 10.9863rpx */;
+                height: 25.6348rpx /* 35px -> 25.6348rpx */;
+                line-height: 25.6348rpx /* 35px -> 25.6348rpx */;
+                border-radius: 12.4512rpx /* 17px -> 12.4512rpx */;
                 color: #fff;
                 font-weight: 700;
                 font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
@@ -260,6 +282,9 @@ const submitForm = () => {
           }
         }
       }
+    }
+    .isInp {
+      padding-bottom: 131.8359rpx /* 180px -> 131.8359rpx */;
     }
     .footer {
       flex: 3;

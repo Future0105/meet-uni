@@ -22,9 +22,10 @@ export function getTeamsList_API() {
 }
 
 //获取教员列表
-export function getTeachersList_API() {
+export function getTeachersList_API(data = {}) {
   return request({
     url: "/Pad_GetPolicemanList",
+    data //不传参-所有学员,可选参数-部门ID  CollegeId
   })
 }
 //获取不带出理由列表

@@ -3,60 +3,75 @@
     <view class="layout">
       <view class="title">
         <button class="homeBtn" @click="redirectTo(`/pages/index/index`)">
-          <uni-icons type="home" size="50"></uni-icons>
+          <uni-icons type="home" size="40"></uni-icons>
+          <text>主页</text>
         </button>
         <text>探 访 记 录</text>
       </view>
       <view class="studentInfo">
         <view class="header">
           <view class="search-info">
-            <view class="student-name inp">
-              <text>姓名：</text>
-              <uni-easyinput v-model="searchName" placeholder="请输入学员姓名"></uni-easyinput>
+            <view class="searchInp">
+              <view class="student-name inp">
+                <text>姓名：</text>
+                <uni-easyinput v-model="searchName" placeholder="请输入学员姓名"></uni-easyinput>
+              </view>
+              <view class="time-start date">
+                <text>起始时间：</text>
+                <uni-datetime-picker
+                  type="date"
+                  :clear-icon="true"
+                  v-model="searchStartTime"
+                  @change="changeStartTime"
+                />
+              </view>
             </view>
-            <view class="time-start inp">
-              <text>起始时间：</text>
-              <uni-datetime-picker type="date" :clear-icon="true" v-model="searchStartTime" @change="changeStartTime" />
-            </view>
-            <view class="student-address inp">
-              <text>住址：</text>
-              <uni-easyinput v-model="searchAddress" placeholder="请输入家庭住址"></uni-easyinput>
-            </view>
-            <view class="time-end inp">
-              <text>截止时间：</text>
-              <uni-datetime-picker type="date" :clear-icon="true" v-model="searchEndTime" @change="changeEndTime" />
+            <view class="searchDate">
+              <view class="student-address inp">
+                <text>住址：</text>
+                <uni-easyinput v-model="searchAddress" placeholder="请输入家庭住址"></uni-easyinput>
+              </view>
+              <view class="time-end date">
+                <text>截止时间：</text>
+                <uni-datetime-picker type="date" :clear-icon="true" v-model="searchEndTime" @change="changeEndTime" />
+              </view>
             </view>
           </view>
-          <view class="team-select">
-            <uni-data-select
-              label="所在大队"
-              placeholder="请选择组织"
-              emptyTips="暂无数据"
-              v-model="loginTeamValue"
-              :clear="false"
-              :localdata="teamList"
-              @change="teamChange"
-            ></uni-data-select>
-          </view>
-          <view class="search-btn">
-            <button @click="searchBtn">查询</button>
+          <view class="team-box">
+            <view class="team-select">
+              <uni-data-select
+                label="所在大队"
+                placeholder="所有部门"
+                :clear="true"
+                emptyTips="暂无数据"
+                v-model="selectTeam"
+                :localdata="teamsList"
+                @change="teamChange"
+              ></uni-data-select>
+            </view>
+            <button class="updata-btn search" @click="updata">
+              <uni-icons type="search" color="#fff" size="35"></uni-icons><text>搜索</text>
+            </button>
+            <button class="updata-btn reload" @click="updata">
+              <uni-icons type="reload" color="#fff" size="35"></uni-icons><text>刷新</text>
+            </button>
           </view>
         </view>
         <view class="main">
           <view class="student-list">
             <uni-table ref="studentTable" border stripe emptyText="暂无更多数据">
-              <uni-tr height="70">
-                <uni-th width="60" align="center">学员姓名</uni-th>
-                <uni-th width="160" align="center">学员身份证号</uni-th>
-                <uni-th width="40" align="center">学员状态</uni-th>
-                <uni-th width="80" align="center">所在大队</uni-th>
-                <uni-th width="80" align="center">探访家属</uni-th>
-                <uni-th width="70" align="center">申请时间</uni-th>
-                <uni-th width="70" align="center">探访时间</uni-th>
-                <uni-th width="40" align="center">探访窗口</uni-th>
-                <uni-th width="70" align="center">操作</uni-th>
+              <uni-tr>
+                <uni-th width="130" align="center">学员姓名</uni-th>
+                <uni-th width="280" align="center">学员身份证号</uni-th>
+                <uni-th width="80" align="center">学员状态</uni-th>
+                <uni-th width="120" align="center">所在大队</uni-th>
+                <uni-th width="160" align="center">探访家属</uni-th>
+                <uni-th width="150" align="center">申请时间</uni-th>
+                <uni-th width="150" align="center">探访时间</uni-th>
+                <uni-th width="120" align="center">探访窗口</uni-th>
+                <uni-th width="80" align="center">操作</uni-th>
               </uni-tr>
-              <uni-tr height="70" v-for="(item, index) in studentsList" :key="item.studentId">
+              <uni-tr v-for="(item, index) in studentsList" :key="item.studentId">
                 <uni-td align="center">{{ item.name }}</uni-td>
                 <uni-td align="center">{{ item.num }}</uni-td>
                 <uni-td align="center">{{ item.teamName }}</uni-td>
@@ -110,27 +125,27 @@ const studentsList = [
   {
     studentId: 1001,
     name: '大阿达毛',
-    num: '5',
-    teamName: '男',
-    address: '北京',
-    status: '非洲非洲大队长大队长',
-    info: '超级',
-    z: '不听话',
-    zaidui: '在队',
+    num: '5000000002020210000',
+    teamName: '在队在队',
+    address: '北京啊啊大大我打',
+    status: '阿萨德啊实打实阿阿萨德',
+    info: '2000-00-00 00:00:00',
+    z: '3000-00-00 00:00:00',
+    zaidui: '一号窗口',
     in: '录像回放',
     out: '2023年03月01日',
     face: '人脸采集'
   },
   {
-    id: 1002,
-    name: '二毛',
-    num: 500222200000000000000,
-    teamName: '三大队',
-    address: '上海',
-    status: '已带出',
-    info: '无',
-    z: '不听话',
-    zaidui: '在队',
+    studentId: 1001,
+    name: '大阿达毛',
+    num: '5000000002020210000',
+    teamName: '在队在队',
+    address: '北京啊啊大大我打',
+    status: '阿萨德啊实打实阿阿萨德',
+    info: '2000-00-00 00:00:00',
+    z: '3000-00-00 00:00:00',
+    zaidui: '一号窗口',
     in: '2023年03月01日',
     in: '录像回放',
     face: '人脸采集'
@@ -305,8 +320,8 @@ const getData = () => {
       studentId: 1001,
       name: '大阿达毛',
       num: '5',
-      teamName: '男',
-      address: '北京',
+      teamName: '非洲非洲大队长大队长',
+      address: '非洲非洲大队长大队长',
       status: '非洲非洲大队长大队长',
       info: '超级',
       z: '不听话',
@@ -438,6 +453,7 @@ const getData = () => {
 }
 onLoad(() => {
   const loginStore = userLoginStore()
+  loginStore.getTeamsList()
   // 当前登录队伍value默认选中
   // loginTeamValue.value = loginStore.loginData.loginInfo.loginTeamValue
   // 首次请求数据
@@ -460,7 +476,7 @@ onUnload(clearTimer)
 .container {
   width: 100vw;
   height: 100vh;
-  padding-top: 10.9863rpx /* 15px -> 10.9863rpx */;
+  // padding-top: 10.9863rpx /* 15px -> 10.9863rpx */;
   .layout {
     width: 100%;
     height: 100%;
@@ -475,13 +491,15 @@ onUnload(clearTimer)
       position: relative;
       width: 100vw;
       height: 13%;
+      padding: 18.3105rpx /* 25px -> 18.3105rpx */ 3% 10.9863rpx /* 15px -> 10.9863rpx */;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 29.2969rpx /* 40px -> 29.2969rpx */;
       font-weight: 700;
-      color: rgb(51, 89, 255);
+      color: rgb(255, 255, 255);
       .homeBtn {
+        font-weight: 400;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -489,79 +507,270 @@ onUnload(clearTimer)
         // overflow: hidden;
         position: absolute;
         left: 3%;
-        width: 8%;
+        width: 10%;
         height: 60%;
+        font-size: 14.6484rpx /* 20px -> 14.6484rpx */;
+        gap: 3.6621rpx /* 5px -> 3.6621rpx */; /* 图标和文本之间的间距 */
       }
     }
     .studentInfo {
-      height: 86%;
+      height: 87%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
       .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 18%;
         margin: 0 3%;
-        padding: 0 2%;
-        background-color: rgba(175, 174, 174, 0.3);
+        padding: 0 5.8594rpx /* 8px -> 5.8594rpx */;
+        background-color: #f8f8f8;
         border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
         .search-info {
-          width: 50%;
+          flex: 1;
+          // background-color: #007aff;
           height: 100%;
           display: flex;
-          align-items: center;
-          justify-content: flex-start;
+          align-items: space-between;
+          justify-content: space-between;
           flex-wrap: wrap;
           // background-color: aqua;
           font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+          .searchInp {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-right: 29.2969rpx /* 40px -> 29.2969rpx */;
+            // gap: 73.2422rpx /* 100px -> 73.2422rpx */;
+          }
           .inp {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 139.1602rpx /* 190px -> 139.1602rpx */;
-            max-height: 46%;
-            // overflow: hidden;
-            &:nth-child(2n) {
-              margin-left: 25.6348rpx /* 35px -> 25.6348rpx */;
-              width: 168.457rpx /* 230px -> 168.457rpx */;
+            width: 146.4844rpx /* 200px -> 146.4844rpx */;
+            max-height: 100%;
+            text {
+              color: #000;
+              font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
+            }
+            ::v-deep {
+              .uni-easyinput__placeholder-class {
+                font-size: 10.2539rpx /* 14px -> 10.2539rpx */;
+                color: #8f8f8f;
+              }
+              .uni-easyinput__content-input {
+                height: 21.9727rpx /* 30px -> 21.9727rpx */;
+                font-size: 10.2539rpx /* 14px -> 10.2539rpx */;
+                padding: 0 1.4648rpx /* 2px -> 1.4648rpx */ !important;
+              }
+              .uniui-clear {
+                font-size: 14.6484rpx /* 20px -> 14.6484rpx */ !important;
+              }
+              .uni-easyinput {
+                .is-input-border {
+                  border: 1.4648rpx /* 2px -> 1.4648rpx */ solid #d1d1d1 !important;
+                }
+                .is-focused {
+                  border: 1.4648rpx /* 2px -> 1.4648rpx */ solid #298eff !important;
+                }
+              }
+            }
+          }
+          .searchDate {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-right: 29.2969rpx /* 40px -> 29.2969rpx */;
+          }
+          .date {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            // width: 146.4844rpx /* 200px -> 146.4844rpx */;
+            max-height: 100%;
+            // margin-right: 3.6621rpx /* 5px -> 3.6621rpx */;
+            text {
+              color: #000;
+              font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
+            }
+            ::v-deep {
+              .uni-date-x--border {
+                border: none;
+              }
+              .uni-date-x {
+                height: 21.9727rpx /* 30px -> 21.9727rpx */;
+                width: 109.8633rpx /* 150px -> 109.8633rpx */;
+                .uni-icons {
+                  font-size: 21.9727rpx /* 30px -> 21.9727rpx */ !important;
+                }
+              }
+              .uni-date-single {
+                border: 1.4648rpx /* 2px -> 1.4648rpx */ solid #d1d1d1;
+              }
+              .uni-date__x-input {
+                font-size: 10.2539rpx /* 14px -> 10.2539rpx */;
+                color: #000;
+              }
+              .uni-date__icon-clear {
+                .uniui-clear {
+                  font-size: 18.3105rpx /* 25px -> 18.3105rpx */ !important;
+                }
+              }
             }
           }
         }
-        .team-select {
-          // flex: 1;
-          width: 219.7266rpx /* 300px -> 219.7266rpx */;
-          margin-right: 3.6621rpx /* 5px -> 3.6621rpx */;
-          padding: 0 0 0 3.6621rpx /* 5px -> 3.6621rpx */;
-          background-color: #ffffff;
-          border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
-          white-space: nowrap;
-          // overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .search-btn {
-          width: 73.2422rpx /* 100px -> 73.2422rpx */;
-          border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-          overflow: hidden;
-          button {
-            color: #fff;
-            font-weight: 600;
+        .team-box {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          .team-select {
+            // white-space: nowrap;
+            // overflow: hidden;
+            // text-overflow: ellipsis;
+            display: flex;
+            padding: 0 2.1973rpx /* 3px -> 2.1973rpx */;
+            // background-color: #92c5c7;
+            border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
+            width: 183.1055rpx /* 250px -> 183.1055rpx */;
+            height: 100%;
+            ::v-deep {
+              //组件高度
+              .uni-stat__select {
+                height: 100%;
+              }
+              //左侧文字
+              .uni-label-text {
+                font-weight: 400;
+                color: #000000;
+                font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
+              }
+              // 右侧下拉
+              .uni-select {
+                box-sizing: border-box;
+                // background-color: #00aaff;
+                height: 21.9727rpx /* 30px -> 21.9727rpx */;
+                border: 1.4648rpx /* 2px -> 1.4648rpx */ solid #d1d1d1;
+              }
+              //下拉箭头
+              uni-text.uni-icons {
+                font-size: 11.7188rpx /* 16px -> 11.7188rpx */ !important;
+                color: #d1d1d1 !important;
+              }
+              //选中项
+              .uni-select__input-text {
+                width: 91.5527rpx /* 125px -> 91.5527rpx */;
+                color: #000;
+                font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+              }
+              //下拉框中列表内容
+              .uni-select__selector-item {
+                box-sizing: border-box;
+                padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+                color: #000;
+                margin: 3.6621rpx /* 5px -> 3.6621rpx */ 2.1973rpx /* 3px -> 2.1973rpx */;
+                height: 20.5078rpx /* 28px -> 20.5078rpx */;
+                line-height: 20.5078rpx /* 28px -> 20.5078rpx */;
+                border-radius: 5px;
+                font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+                background-color: #e9e9e9;
+                // border: 1px solid #e5e5e5;
+                text {
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+                  overflow: hidden;
+                }
+              }
+              //下拉最大高度
+              .uni-select__selector-scroll {
+                background-color: #fff;
+                max-height: 317.8711rpx /* 434px -> 317.8711rpx */;
+              }
+              .uni-select__selector-empty {
+                padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+                margin: 3.6621rpx /* 5px -> 3.6621rpx */ 2.1973rpx /* 3px -> 2.1973rpx */;
+                // background-color: #4bbdf7;
+                font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+                border-radius: 5px;
+              }
+            }
+          }
+          .updata-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+            padding: 0;
+            width: 47.6074rpx /* 65px -> 47.6074rpx */;
+            height: 29.2969rpx /* 40px -> 29.2969rpx */;
             font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+            border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
             background-color: #00aaff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: #fff;
           }
         }
       }
       .main {
         max-height: 82%;
-        padding: 10.9863rpx /* 15px -> 10.9863rpx */ 3%;
+        padding: 7.3242rpx /* 10px -> 7.3242rpx */ 3%;
         display: flex;
         flex-direction: column;
         .student-list {
           height: 100%;
-          border: 1px #b8b5b5 solid;
+          // border: 1px #b8b5b5 solid;
           border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
           overflow-y: auto; /* 添加垂直滚动条 */
+          ::v-deep {
+            //表头
+            .uni-table-th {
+              height: 32.959rpx /* 45px -> 32.959rpx */;
+              font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
+              font-weight: 400;
+              color: #000;
+              // font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+            }
+            //表格
+            .uni-table-td {
+              font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+              line-height: 16.1133rpx /* 22px -> 16.1133rpx */;
+              // height: 29.2969rpx /* 40px -> 29.2969rpx */;
+              // white-space: nowrap !important;
+              // overflow: hidden;
+              // text-overflow: ellipsis;
+            }
+            .table--border {
+              border-color: #e2e2e2;
+            }
+            .checkbox__inner {
+              width: 14.6484rpx /* 20px -> 14.6484rpx */;
+              height: 14.6484rpx /* 20px -> 14.6484rpx */;
+              border: 1.4648rpx /* 2px -> 1.4648rpx */ #007aff solid;
+              overflow: hidden;
+            }
+            .checkbox__inner-icon {
+              box-sizing: border-box;
+              position: absolute;
+              top: -30px;
+              left: 0px;
+              width: 14.6484rpx /* 20px -> 14.6484rpx */;
+              height: 21.9727rpx /* 30px -> 21.9727rpx */;
+              border: 2.1973rpx /* 3px -> 2.1973rpx */ solid #fff;
+            }
+            .checkbox--indeterminate .checkbox__inner-icon {
+              top: 0;
+              left: -3px;
+              width: 14.6484rpx /* 20px -> 14.6484rpx */;
+              height: 14.6484rpx /* 20px -> 14.6484rpx */;
+              // background-color: #c61212;
+            }
+            //暂无数据
+            .uni-table-text {
+              font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+            }
+          }
           .video-btn {
             // margin: 0;
             // padding: 0;
@@ -570,10 +779,16 @@ onUnload(clearTimer)
             justify-content: center;
             // background-color: #00aaff;
             .video {
+              width: 43.9453rpx /* 60px -> 43.9453rpx */;
               margin: 0;
               padding: 0;
-              padding: 4.3945rpx /* 6px -> 4.3945rpx */;
-              background-color: #ececec;
+              padding: 3.6621rpx /* 5px -> 3.6621rpx */;
+              background-color: rgba(0, 157, 255, 0.1);
+              font-size: 8.7891rpx /* 12px -> 8.7891rpx */;
+              color: #00aaff;
+              border: #00aaff 1px solid;
+              white-space: nowrap;
+              overflow: hidden;
             }
           }
         }

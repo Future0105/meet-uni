@@ -44,7 +44,7 @@ const reasons = ref([])
 //选中的不带出理由
 const selectedReason = ref('')
 //其他理由(自定义输入内容)
-const otherReason = ref('')
+// const otherReason = ref('')
 
 //获取不带出理由列表
 const getReasonsList = async () => {
@@ -57,20 +57,18 @@ const getReasonsList = async () => {
       icon: 'none'
     })
   }
-  console.log(reasons.value)
 }
 
 //组件加载
 onLoad(async () => {
-  reasons.value = [
-    { Name: '不带出' },
-    { Name: '不带出' },
-    { Name: '不带出' },
-    { Name: '不带出' },
-    { Name: '不带出' },
-    { Name: '不带出' },
-
-  ]
+  // reasons.value = [
+  //   { Name: '不带出' },
+  //   { Name: '不带出' },
+  //   { Name: '不带出' },
+  //   { Name: '不带出' },
+  //   { Name: '不带出' },
+  //   { Name: '不带出' }
+  // ]
   //获取不带出理由列表
   await getReasonsList()
 })
@@ -172,7 +170,7 @@ const handleCancel = () => {
       .radio-label {
         display: block;
         padding: 3.6621rpx /* 5px -> 3.6621rpx */;
-        margin:3.6621rpx /* 5px -> 3.6621rpx */;
+        margin: 3.6621rpx /* 5px -> 3.6621rpx */;
         background-color: #e9e9e9;
         border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
       }
@@ -195,17 +193,23 @@ const handleCancel = () => {
       }
     }
     .modal-footer {
-      height: 29.2969rpx /* 40px -> 29.2969rpx */;
+      // margin-top: 3.6621rpx /* 5px -> 3.6621rpx */;
+      height: 43.9453rpx /* 60px -> 43.9453rpx */;
       display: flex;
       align-items: center;
-      justify-content: space-around;
+      padding: 7.3242rpx /* 10px -> 7.3242rpx */;
+      // justify-content: space-around;
+      // gap: 7.3242rpx /* 10px -> 7.3242rpx */;
       .btn {
-        flex-grow: 1;
-        // padding: 3.6621rpx /* 5px -> 3.6621rpx */;
+        // flex-grow: 1;
+        width: 65.918rpx /* 90px -> 65.918rpx */;
+        height: 29.2969rpx /* 40px -> 29.2969rpx */;
+        line-height: 29.2969rpx /* 40px -> 29.2969rpx */;
+        // padding: 7.3242rpx /* 10px -> 7.3242rpx */;
         text-align: center;
         color: #333;
         font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-        background-color: #c0c4cc;
+        background-color: #e0e0e0;
         // border-left: 0.7324rpx /* 1px -> .7324rpx */ solid #e7e7e7;
       }
       .btn.confirm {

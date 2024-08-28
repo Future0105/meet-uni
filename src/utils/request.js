@@ -2,7 +2,7 @@
 // const BASE_URL = 'https://tea.qingnian8.com/api/bizhi'
 // const BASE_URL = 'https://zj.v.api.aa1.cn/api/Age-calculation' //生肖
 // const BASE_URL = 'http://192.168.0.118:86/api/WisdomVisit'
-const DEFAULT_BASE_URL = 'http://23.84.142.247:90/api/WisdomVisit'
+const DEFAULT_BASE_URL = 'http://23.84.152.249:90/api/WisdomVisit'
 // 请求拦截器
 function requestInterceptor(options) {
   // 从本地存储获取 token

@@ -5,19 +5,19 @@
         <view class="team-select">
           <uni-data-select
             label="所在大队"
-            placeholder="请选择组织"
+            placeholder="所有部门"
+            :clear="true"
             emptyTips="暂无数据"
             v-model="selectTeam"
-            :clear="false"
             :localdata="teamsList"
             @change="teamChange"
           ></uni-data-select>
         </view>
         <button class="updata-btn search" @click="updata">
-          <uni-icons type="search" color="#fff" size="40"></uni-icons><text>搜索</text>
+          <uni-icons type="search" color="#fff" size="35"></uni-icons><text>搜索</text>
         </button>
         <button class="updata-btn reload" @click="updata">
-          <uni-icons type="reload" color="#fff" size="40"></uni-icons><text>刷新</text>
+          <uni-icons type="reload" color="#fff" size="35"></uni-icons><text>刷新</text>
         </button>
       </view>
 
@@ -27,7 +27,7 @@
     </view>
     <view class="main">
       <view class="student-list">
-        <uni-table border stripe emptyText="暂无更多数据">
+        <uni-table border emptyText="暂无更多数据">
           <uni-tr>
             <uni-th width="200" align="center">学员姓名</uni-th>
             <uni-th width="250" align="center">申请会见家属</uni-th>
@@ -73,7 +73,7 @@ const getTodayOutList = async (data = {}) => {
     if (studentsList.value) {
       outNumber.value = studentsList.value.length
     }
-    console.log(studentsList.value)
+    // console.log(studentsList.value)
   } else {
     uni.showToast({
       title: '获取今日带出学员列表失败',
@@ -97,128 +97,128 @@ const teamChange = e => {
   selectTeam.value = e
 }
 const updata = async () => {
-  studentsList.value = [
-    {
-      Id: 1001,
-      CadetName: '张三张三张三张三张三张三张三',
-      KinName: '张三张三张三张三张三张三张三',
-      CollegeName: '一大一大队一大队一大队一大队队',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1002,
-      CadetName: '广东省深圳市龙岗区',
-      KinName: '广东省深圳市龙岗区',
-      CollegeName: '广东省深圳市龙岗区',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1003,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1004,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1005,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1002,
-      CadetName: '广东省深圳市龙岗区',
-      KinName: '广东省深圳市龙岗区',
-      CollegeName: '广东省深圳市龙岗区',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1003,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1004,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1005,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1002,
-      CadetName: '广东省深圳市龙岗区',
-      KinName: '广东省深圳市龙岗区',
-      CollegeName: '广东省深圳市龙岗区',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1003,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1004,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1005,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1002,
-      CadetName: '广东省深圳市龙岗区',
-      KinName: '广东省深圳市龙岗区',
-      CollegeName: '广东省深圳市龙岗区',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1003,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1004,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1005,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    }
-  ]
-  // await getTodayOutList({ CollegeId: selectTeam.value })
+  await getTodayOutList({ CollegeId: selectTeam.value })
+  // studentsList.value = [
+  //   {
+  //     Id: 1001,
+  //     CadetName: '张三张三张三张三张三张三张三',
+  //     KinName: '张三张三张三张三张三张三张三',
+  //     CollegeName: '一大一大队一大队一大队一大队队',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '广东省深圳市龙岗区',
+  //     KinName: '广东省深圳市龙岗区',
+  //     CollegeName: '广东省深圳市龙岗区',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '广东省深圳市龙岗区',
+  //     KinName: '广东省深圳市龙岗区',
+  //     CollegeName: '广东省深圳市龙岗区',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '广东省深圳市龙岗区',
+  //     KinName: '广东省深圳市龙岗区',
+  //     CollegeName: '广东省深圳市龙岗区',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '广东省深圳市龙岗区',
+  //     KinName: '广东省深圳市龙岗区',
+  //     CollegeName: '广东省深圳市龙岗区',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   }
+  // ]
 }
 </script>
 
@@ -237,7 +237,7 @@ const updata = async () => {
     padding: 7.3242rpx /* 10px -> 7.3242rpx */ 5.8594rpx /* 8px -> 5.8594rpx */;
     margin: 0 /* 8px -> 5.8594rpx */ 3%;
     border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-    background-color: rgba(214, 223, 226, 0.3);
+    background-color: #f8f8f8;
     // overflow: hidden;
     .team-box {
       display: flex;
@@ -259,8 +259,8 @@ const updata = async () => {
           }
           //左侧文字
           .uni-label-text {
-            font-weight: 600;
-            color: #ffffff;
+            font-weight: 400;
+            color: #000000;
             font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
           }
           // 右侧下拉
@@ -268,30 +268,30 @@ const updata = async () => {
             box-sizing: border-box;
             // background-color: #00aaff;
             height: 21.9727rpx /* 30px -> 21.9727rpx */;
-            border: 1.4648rpx /* 2px -> 1.4648rpx */ solid #ffffff;
+            border: 1.4648rpx /* 2px -> 1.4648rpx */ solid #d1d1d1;
           }
           //下拉箭头
           uni-text.uni-icons {
-            font-size: 10.9863rpx /* 15px -> 10.9863rpx */ !important;
-            color: #ffffff !important;
+            font-size: 11.7188rpx /* 16px -> 11.7188rpx */ !important;
+            color: #d1d1d1 !important;
           }
           //选中项
           .uni-select__input-text {
             width: 91.5527rpx /* 125px -> 91.5527rpx */;
-            color: #ffffff;
+            color: #000;
             font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
           }
           //下拉框中列表内容
           .uni-select__selector-item {
             box-sizing: border-box;
             padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
-            color: #ffffff;
+            color: #000;
             margin: 3.6621rpx /* 5px -> 3.6621rpx */ 2.1973rpx /* 3px -> 2.1973rpx */;
             height: 20.5078rpx /* 28px -> 20.5078rpx */;
             line-height: 20.5078rpx /* 28px -> 20.5078rpx */;
             border-radius: 5px;
             font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-            background-color: #4bbdf7;
+            background-color: #e9e9e9;
             // border: 1px solid #e5e5e5;
             text {
               white-space: nowrap;
@@ -301,7 +301,7 @@ const updata = async () => {
           }
           //下拉最大高度
           .uni-select__selector-scroll {
-            background-color: #e4e4e4;
+            background-color: #fff;
             max-height: 317.8711rpx /* 434px -> 317.8711rpx */;
           }
           .uni-select__selector-empty {
@@ -332,7 +332,7 @@ const updata = async () => {
       max-height: 100%;
       margin-left: 21.9727rpx /* 30px -> 21.9727rpx */;
       font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
-      color: rgb(255, 255, 255);
+      color: #000;
     }
   }
   .main {
@@ -351,6 +351,7 @@ const updata = async () => {
         .uni-table-th {
           height: 32.959rpx /* 45px -> 32.959rpx */;
           font-size: 12.4512rpx /* 17px -> 12.4512rpx */;
+          font-weight: 400;
           color: #000;
           // font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
         }
@@ -362,6 +363,9 @@ const updata = async () => {
           // white-space: nowrap !important;
           // overflow: hidden;
           // text-overflow: ellipsis;
+        }
+        .table--border {
+          border-color: #e2e2e2;
         }
         .checkbox__inner {
           width: 14.6484rpx /* 20px -> 14.6484rpx */;

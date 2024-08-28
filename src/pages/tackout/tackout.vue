@@ -2,7 +2,7 @@
   <view class="container">
     <view class="layout">
       <view class="nav">
-        <button class="btn home" @click="redirectTo('/pages/index/index')">
+        <button class="btn home" @click="navigateTo('/pages/index/index')">
           <uni-icons type="home" size="50"></uni-icons>
           <text>主页</text>
         </button>
@@ -10,7 +10,7 @@
           待带出学员
         </button>
         <button :class="{ active: selectPage === 'todayOut' }" @click="changePage('todayOut')" class="btn">
-          今日已带学员
+          已带出学员
         </button>
         <button :class="{ active: selectPage === 'studentsInfo' }" @click="changePage('studentsInfo')" class="btn">
           学员信息
@@ -30,13 +30,16 @@
 </template>
 <script setup>
 // import HeadFill from '../../components/HeadFill/HeadFill.vue'
-import { redirectTo } from '@/utils/to.js'
+import { userLoginStore } from '@/store/login.js'
+import { navigateTo } from '@/utils/to.js'
 import WaitOut from './components/WaitOut.vue'
 import TodayOut from './components/TodayOut.vue'
 import StudentsInfo from './components/StudentsInfo.vue'
 import TeachersInfo from './components/TeachersInfo.vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
+
+const loginStore = userLoginStore()
 //显示页面(默认-待带出学员)
 const selectPage = ref('waitOut')
 //nav点击切换页面
@@ -46,6 +49,8 @@ const changePage = page => {
   selectPage.value = page
 }
 onLoad(async e => {
+  loginStore.getTeamsList()
+  // loginStore.getTeachersList()
   if (e.page) {
     selectPage.value = e.page
   }

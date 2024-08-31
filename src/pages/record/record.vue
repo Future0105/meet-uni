@@ -46,7 +46,7 @@
                 emptyTips="暂无数据"
                 v-model="selectTeam"
                 :localdata="teamsList"
-                @change="teamChange"
+                @change="teamListChange"
               ></uni-data-select>
             </view>
             <button class="updata-btn search" @click="updata">
@@ -110,17 +110,16 @@ const searchStartTime = ref('')
 //截止时间
 const searchEndTime = ref('')
 
-const loginTeamValue = ref(0)
-
 //所有队伍列表
-const teamList = ref([
+const teamsList = ref([
   { value: 0, text: '一大队' }, //text  大队名称
   { value: 1, text: '二大队' },
   { value: 2, text: '三大队' },
   { value: 3, text: '四大队' },
   { value: 100, text: '五大队' }
 ])
-const teamName = ref(teamList.value[0].text)
+//下拉框选中队伍(默认为当前登录大队)
+const selectTeam = ref(null)
 const studentsList = [
   {
     studentId: 1001,
@@ -255,42 +254,331 @@ const studentsList = [
     info: '无'
   }
 ]
-//改变队伍
-const teamChange = e => {
-  // e === teamList.value
-  // 先查找与 e 匹配的项
-  teamName.value = teamList.value.find(item => item.value === e).text
-  // 处理找到的情况
-  if (teamName.value) {
-    // 如果找到了匹配的项,发起请求,获取选择队伍数据
-    // teamName.value = foundItem.text
-    // await getTeamData_API(teamName.value)
-  }
-  // teamName.value = teamList.value.find(item => item.value === e)?.text
-  // await getTeamData_API(teamName.value)
+
+//下拉框更改部门查询学员
+const teamListChange = async e => {
+  selectTeam.value = e // e 为选中的部门id
 }
 
-const searchBtn = async () => {
-  //  //根据条件  发起请求
-  console.log('name:', searchName.value)
-  console.log('address:', searchAddress.value)
-  console.log('searchStartTime:', searchStartTime.value)
-  console.log('searchEndTime:', searchEndTime.value)
-  console.log('teamName:', teamName.value)
-  uni.showToast({
-    title: `查询
-    名字:${searchName.value}
-    地址:${searchAddress.value}
-    起始时间:${searchStartTime.value}
-    截止时间:${searchEndTime.value} 
-    所属大队:${teamName.value}`,
-    icon: 'none'
-  })
-  //let res =  await getTeamData_API({
-  //   studentName: searchName.value,
-  //   homeAddress: searchAddress.value,
-  //   team: teamName.value
+const updata = async () => {
+  // console.log('SearchType:', show.value)
+  studentsList.value = [
+    {
+      RealName: '张三啊',
+      IDCardNo: 435222200001016000,
+      Sex: '男',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
+      CollegeName: '北碚区教育矫治所',
+      AttentLevelName: '一级',
+      CadetStateName: '生病',
+      InTeamStateName: '李涛监狱',
+      FrozenDateTime: '2000-00-00 00:00:00',
+      RoundTime: '3000-00-00 00:00:00',
+      IsFace: 1
+    },
+    {
+      RealName: '张四',
+      IDCardNo: 4351,
+      Sex: '女',
+      DepartPath: '重庆市北碚大区北碚大镇北碚大街道00号00号',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张五',
+      IDCardNo: 4352,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张三',
+      IDCardNo: 4350,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张四',
+      IDCardNo: 4351,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张五',
+      IDCardNo: 4352,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张三',
+      IDCardNo: 4350,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张四',
+      IDCardNo: 4351,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张五',
+      IDCardNo: 4352,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    }
+  ]
+  // pageCurrent.value = 1
+  // await getStudentsInfo({
+  //   RealName: searchName.value,
+  //   DepartPath: searchAddress.value,
+  //   CollegeId: selectTeam.value,
+  //   SearchType: show.value,
+  //   // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
+  //   PageShowNum: pageSize,
+  //   PageNum: pageCurrent.value
   // })
+  // console.log(
+  //   'RealName: ',
+  //   searchName.value,
+  //   'DepartPath: ',
+  //   searchAddress.value,
+  //   'CollegeId:',
+  //   selectTeam.value,
+  //   'SearchType:',
+  //   show.value,
+  //   // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
+  //   'PageShowNum:',
+  //   pageSize,
+  //   'PageNum:',
+  //   pageCurrent.value
+  // )
+  // studentsList.value = [
+  //   {
+  //     AttentLevelName: '一级一级',
+  //     CadetStateName: '正常一级',
+  //     CollegeName: '一大一大队队',
+  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
+  //     FrozenDateTime: '2020-01-10 00:00:00',
+  //     Id: 5002444200010101000,
+  //     InTeamStateName: '在所',
+  //     RealName: '王二大山',
+  //     RoundTime: '2024-08-31 00:00:00',
+  //     Sex: '男',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     AttentLevelName: '二级',
+  //     CadetStateName: '生病',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市巴南区南泉镇3社47号',
+  //     FrozenDateTime: '2023-06-15 00:00:00',
+  //     Id: 4352,
+  //     InTeamStateName: '刑事拘留',
+  //     RealName: '张三',
+  //     RoundTime: '2024-08-15 00:00:00',
+  //     Sex: '男',
+  //     IsFace: 0
+  //   },
+  //   {
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '正常',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
+  //     FrozenDateTime: '2020-01-10 00:00:00',
+  //     Id: 4353,
+  //     InTeamStateName: '在所',
+  //     RealName: '王二',
+  //     RoundTime: '2024-08-31 00:00:00',
+  //     Sex: '男',
+  //     IsFace: 0
+  //   },
+  //   {
+  //     AttentLevelName: '二级',
+  //     CadetStateName: '生病',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市巴南区南泉镇3社47号',
+  //     FrozenDateTime: '2023-06-15 00:00:00',
+  //     Id: 4354,
+  //     InTeamStateName: '刑事拘留',
+  //     RealName: '张三',
+  //     RoundTime: '2024-08-15 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '正常',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
+  //     FrozenDateTime: '2020-01-10 00:00:00',
+  //     Id: 4355,
+  //     InTeamStateName: '在所',
+  //     RealName: '王二',
+  //     RoundTime: '2024-08-31 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '二级',
+  //     CadetStateName: '生病',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市巴南区南泉镇3社47号',
+  //     FrozenDateTime: '2023-06-15 00:00:00',
+  //     Id: 4356,
+  //     InTeamStateName: '刑事拘留',
+  //     RealName: '张三',
+  //     RoundTime: '2024-08-15 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '正常',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
+  //     FrozenDateTime: '2020-01-10 00:00:00',
+  //     Id: 4357,
+  //     InTeamStateName: '在所',
+  //     RealName: '王二',
+  //     RoundTime: '2024-08-31 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '二级',
+  //     CadetStateName: '生病',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市巴南区南泉镇3社47号',
+  //     FrozenDateTime: '2023-06-15 00:00:00',
+  //     Id: 4358,
+  //     InTeamStateName: '刑事拘留',
+  //     RealName: '张三',
+  //     RoundTime: '2024-08-15 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '正常',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
+  //     FrozenDateTime: '2020-01-10 00:00:00',
+  //     Id: 4359,
+  //     InTeamStateName: '在所',
+  //     RealName: '王二',
+  //     RoundTime: '2024-08-31 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '二级',
+  //     CadetStateName: '生病',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市巴南区南泉镇3社47号',
+  //     FrozenDateTime: '2023-06-15 00:00:00',
+  //     Id: 4360,
+  //     InTeamStateName: '刑事拘留',
+  //     RealName: '张三',
+  //     RoundTime: '2024-08-15 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '正常',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
+  //     FrozenDateTime: '2020-01-10 00:00:00',
+  //     Id: 4361,
+  //     InTeamStateName: '在所',
+  //     RealName: '王二',
+  //     RoundTime: '2024-08-31 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '二级',
+  //     CadetStateName: '生病',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市巴南区南泉镇3社47号',
+  //     FrozenDateTime: '2023-06-15 00:00:00',
+  //     Id: 4362,
+  //     InTeamStateName: '刑事拘留',
+  //     RealName: '张三',
+  //     RoundTime: '2024-08-15 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '正常',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
+  //     FrozenDateTime: '2020-01-10 00:00:00',
+  //     Id: 4363,
+  //     InTeamStateName: '在所',
+  //     RealName: '王二',
+  //     RoundTime: '2024-08-31 00:00:00',
+  //     Sex: '男'
+  //   },
+  //   {
+  //     AttentLevelName: '二级',
+  //     CadetStateName: '生病',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市巴南区南泉镇3社47号',
+  //     FrozenDateTime: '2023-06-15 00:00:00',
+  //     Id: 4364,
+  //     InTeamStateName: '刑事拘留',
+  //     RealName: '张三',
+  //     RoundTime: '2024-08-15 00:00:00',
+  //     Sex: '男'
+  //   }
+  // ]
 }
 
 //录像回放
@@ -451,15 +739,23 @@ const getData = () => {
   ]
   console.log('探访记录,定时器执行中')
 }
-onLoad(() => {
+onLoad(async () => {
   const loginStore = userLoginStore()
-  loginStore.getTeamsList()
-  // 当前登录队伍value默认选中
-  // loginTeamValue.value = loginStore.loginData.loginInfo.loginTeamValue
-  // 首次请求数据
-  getData()
-  // 设置定时器，每隔5秒请求一次数据
-  timer = setInterval(getData, 3000)
+  // 部门列表
+  teamsList.value = loginStore.teamsList
+  //根据登录信息,匹配默认选中部门
+  if (teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId)) {
+    selectTeam.value = teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId).value
+  }
+  //默认登录部门下的学员信息
+  // await getStudentsList({ CollegeId: selectTeam.value })
+  // loginStore.getTeamsList()
+  // // 当前登录队伍value默认选中
+  // // loginTeamValue.value = loginStore.loginData.loginInfo.loginTeamValue
+  // // 首次请求数据
+  // getData()
+  // // 设置定时器，每隔5秒请求一次数据
+  // timer = setInterval(getData, 3000)
 })
 const clearTimer = () => {
   if (timer) {

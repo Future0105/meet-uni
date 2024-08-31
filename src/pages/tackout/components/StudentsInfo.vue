@@ -50,8 +50,8 @@
             <uni-th width="110" align="center">姓名</uni-th>
             <uni-th width="" align="center">身份证号</uni-th>
             <uni-th width="60" align="center">性别</uni-th>
-            <uni-th width="280" align="center">家庭住址</uni-th>
-            <uni-th width="150" align="center">所在大队</uni-th>
+            <uni-th width="295" align="center">家庭住址</uni-th>
+            <uni-th width="170" align="center">所在大队</uni-th>
             <uni-th width="80" align="center">关注等级</uni-th>
             <uni-th width="80" align="center">学员状态</uni-th>
             <uni-th width="80" align="center">在队状态</uni-th>
@@ -70,7 +70,18 @@
             <uni-td align="center">{{ item.Sex }}</uni-td>
             <uni-td align="center">{{ item.DepartPath }}</uni-td>
             <uni-td align="center">{{ item.CollegeName }}</uni-td>
-            <uni-td align="center">{{ item.AttentLevelName }}</uni-td>
+            <uni-td align="center"
+              ><uni-easyinput
+                v-model="item.AttentLevelName"
+                type="text"
+                :clearable="false"
+                :inputBorder="false"
+                placeholder="无"
+                @change="InpState($event, item)"
+                :styles="{ color: '#606266' }"
+              ></uni-easyinput>
+              <!-- <input v-model="item.AttentLevelName" placeholder="待设置" @blur="InpState($event, item)"/> -->
+            </uni-td>
             <uni-td align="center">{{ item.CadetStateName }}</uni-td>
             <uni-td align="center">{{ item.InTeamStateName }}</uni-td>
             <uni-td align="center">{{ item.FrozenDateTime }}</uni-td>
@@ -208,6 +219,125 @@ const showDataChange = e => {
 
 const updata = async () => {
   // console.log('SearchType:', show.value)
+  studentsList.value = [
+    {
+      RealName: '张三啊',
+      IDCardNo: 435222200001016000,
+      Sex: '男',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
+      CollegeName: '北碚区教育矫治所',
+      AttentLevelName: '一级',
+      CadetStateName: '生病',
+      InTeamStateName: '李涛监狱',
+      FrozenDateTime: '2000-00-00 00:00:00',
+      RoundTime: '3000-00-00 00:00:00',
+      IsFace: 1
+    },
+    {
+      RealName: '张四',
+      IDCardNo: 4351,
+      Sex: '女',
+      DepartPath: '重庆市北碚大区北碚大镇北碚大街道00号00号',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张五',
+      IDCardNo: 4352,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张三',
+      IDCardNo: 4350,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张四',
+      IDCardNo: 4351,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张五',
+      IDCardNo: 4352,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张三',
+      IDCardNo: 4350,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张四',
+      IDCardNo: 4351,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    },
+    {
+      RealName: '张五',
+      IDCardNo: 4352,
+      Sex: '男',
+      DepartPath: '13618206431',
+      CollegeName: '李涛',
+      AttentLevelName: '一级',
+      CadetStateName: '男',
+      InTeamStateName: '李涛',
+      FrozenDateTime: '李涛重名标识',
+      RoundTime: '男',
+      IsFace: 1
+    }
+  ]
   pageCurrent.value = 1
   await getStudentsInfo({
     RealName: searchName.value,
@@ -218,7 +348,6 @@ const updata = async () => {
     PageShowNum: pageSize,
     PageNum: pageCurrent.value
   })
-
   // console.log(
   //   'RealName: ',
   //   searchName.value,
@@ -407,6 +536,11 @@ const updata = async () => {
   //     Sex: '男'
   //   }
   // ]
+}
+//学员状态,输入框
+const InpState = (e, item) => {
+  console.log(e)
+  console.log(item)
 }
 //人脸采集 防抖必须停止触发行为后才可以再次触发
 //leading延迟开始前调用  trailing延迟结束后调用
@@ -618,6 +752,45 @@ const getFace = debounce(
       border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
       overflow-y: auto; /* 添加垂直滚动条 */
       ::v-deep {
+        //状态输入框
+        .uni-easyinput {
+          text-align: center;
+          // font-size: 11.7188rpx /* 16px -> 11.7188rpx */ !important;
+        }
+        .uni-easyinput__content-input {
+          padding: 0 !important;
+          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+        }
+        .uni-easyinput__content {
+          background-color: transparent !important;
+        }
+        .uni-input-placeholder {
+          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+        }
+        // .uni-easyinput {
+        //   text-align: center;
+        //   .is-input-border {
+        //     border: none;
+        //   }
+        //   .uni-easyinput__content {
+        //     color: #606266;
+        //     background-color: transparent !important;
+        //   }
+        //   .uni-easyinput__content-textarea {
+        //     height: 80px;
+        //     line-height: 80px;
+        //     font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+        //   }
+        //   .uni-textarea-placeholder {
+        //     font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+        //   }
+        //   .uni-easyinput__content-textarea {
+        //     margin: 0;
+        //   }
+        //   .input-padding {
+        //     padding: 0;
+        //   }
+        // }
         //表头
         .uni-table-th {
           height: 32.959rpx /* 45px -> 32.959rpx */;
@@ -628,6 +801,7 @@ const getFace = debounce(
         }
         //表格
         .uni-table-td {
+          padding: 8px 6px;
           font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
           line-height: 16.1133rpx /* 22px -> 16.1133rpx */;
           // height: 29.2969rpx /* 40px -> 29.2969rpx */;
@@ -665,6 +839,7 @@ const getFace = debounce(
           font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
         }
       }
+
       .face-btn {
         // margin: 0;
         // padding: 0;

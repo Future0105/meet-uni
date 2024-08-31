@@ -116,7 +116,7 @@ const logout = () => {
         top: 50%;
         left: 0;
         transform: translateY(-50%);
-        width: 256.3477rpx /* 350px -> 256.3477rpx */;
+        width: 256.3477rpx /* 350.0001px -> 256.3477rpx */;
         margin-left: 36.6211rpx /* 50px -> 36.6211rpx */;
       }
       .login-info {
@@ -153,7 +153,7 @@ const logout = () => {
       overflow-y: auto;
       box-sizing: border-box; /* 确保宽度计算包含 padding 和 border */
       .box {
-        flex-basis: calc((100% - 30px) / 4);
+        flex-basis: calc((100% - 30.0001px) / 4);
         height: 117.1875rpx /* 160px -> 117.1875rpx */;
         display: flex;
         flex-direction: column;
@@ -164,7 +164,7 @@ const logout = () => {
         color: #fff;
         background-color: rgba(72, 171, 232, 0.8); /* 设置背景色和透明度 */
         border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
-        backdrop-filter: blur(14.6484rpx /* 20px -> 14.6484rpx */); /* 添加模糊效果 */
+        backdrop-filter: blur(14.6484rpx /* 19.9999px -> 14.6484rpx */); /* 添加模糊效果 */
         // tetx {
         //   max-width: 100%;
         //   white-space: nowrap;

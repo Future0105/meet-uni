@@ -32,7 +32,7 @@
           <text>{{ showBtn ? '确认选择' : '选择民警' }}</text>
         </button>
         <view v-show="showBtn" class="teacher-list">
-          <checkbox-group v-if="teachersList.length > 0" @change="selectTeachersList">
+          <checkbox-group class="checkbox-group" v-if="teachersList.length > 0" @change="selectTeachersList">
             <label class="checkbox" v-for="item in teachersList" :key="item.Id">
               <view>
                 <checkbox :value="item.Name" :checked="item.Id === selectedTeacherId" />
@@ -40,7 +40,7 @@
               <view> {{ item.Name }}</view>
             </label>
           </checkbox-group>
-          <text v-else style="color: #000">暂无数据</text>
+          <view v-else class="checkbox-group-none">暂无数据</view>
         </view>
       </view>
       <button class="tack-btn" @click="takeOutSelectedStudents">
@@ -206,102 +206,102 @@ const teamListChange = async e => {
 const updata = async () => {
   selectedStudentsLength.value = 0
   selectedTeachersLength.value = 0
-  // studentsList.value = [
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '选择民警选择民警选择民警选择民警',
-  //     KinName: '选择民警选择民警选择民警选择民警',
-  //     CollegeName: '选择民警选择民警选择民警选择民警选择民警选择民警选择民警',
-  //     DepartPath: '大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   }
-  // ]
+  studentsList.value = [
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '选择民警选择民警选择民警选择民警',
+      KinName: '选择民警选择民警选择民警选择民警',
+      CollegeName: '选择民警选择民警选择民警选择民警选择民警选择民警选择民警',
+      DepartPath: '大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    },
+    {
+      Id: 1001,
+      CadetName: '大毛',
+      KinName: '大毛父亲',
+      CollegeName: 'CollegeName',
+      DepartPath: 'DepartPath'
+    }
+  ]
   teachersList.value = [
-    { Id: 4356, Name: '李莉李莉李莉李莉' },
-    { Id: 4355, Name: '罗啊凯' },
+    { Id: 4356, Name: '李是撒旦电商莉' },
+    { Id: 4355, Name: '罗啊啊凯' },
     { Id: 4350, Name: '李涛啊' },
     { Id: 4356, Name: '李莉' },
     { Id: 4355, Name: '罗凯' },
@@ -313,32 +313,32 @@ const updata = async () => {
     { Id: 4355, Name: '罗凯' },
     { Id: 4350, Name: '李涛' }
   ]
-  // teamsList.value = [
-  //   { value: 331, text: '一大队' },
-  //   { value: 332, text: '二大队' },
-  //   { value: 333, text: '三大队' },
-  //   { value: 334, text: '四大队' },
-  //   { value: 335, text: '五大队' },
-  //   { value: 336, text: '六大队' },
-  //   { value: 1332, text: '七大队' },
-  //   { value: 1333, text: '八大队' },
-  //   { value: 1334, text: '九大队' },
-  //   { value: 1335, text: '十大队' },
-  //   { value: 1347, text: '十一大队' },
-  //   { value: 1348, text: '十二大队' },
-  //   { value: 331, text: '一大队' },
-  //   { value: 332, text: '二大队' },
-  //   { value: 333, text: '三大队' },
-  //   { value: 334, text: '四大队' },
-  //   { value: 335, text: '五大队' },
-  //   { value: 336, text: '六大队' },
-  //   { value: 1332, text: '七大队' },
-  //   { value: 1333, text: '八大队' },
-  //   { value: 1334, text: '九大队' },
-  //   { value: 1335, text: '十大队' },
-  //   { value: 1347, text: '十一大队' },
-  //   { value: 1348, text: '十二大队' }
-  // ]
+  teamsList.value = [
+    { value: 331, text: '一大队' },
+    { value: 332, text: '二大队' },
+    { value: 333, text: '三大队' },
+    { value: 334, text: '四大队' },
+    { value: 335, text: '五大队' },
+    { value: 336, text: '六大队' },
+    { value: 1332, text: '七大队' },
+    { value: 1333, text: '八大队' },
+    { value: 1334, text: '九大队' },
+    { value: 1335, text: '十大队' },
+    { value: 1347, text: '十一大队' },
+    { value: 1348, text: '十二大队' },
+    { value: 331, text: '一大队' },
+    { value: 332, text: '二大队' },
+    { value: 333, text: '三大队' },
+    { value: 334, text: '四大队' },
+    { value: 335, text: '五大队' },
+    { value: 336, text: '六大队' },
+    { value: 1332, text: '七大队' },
+    { value: 1333, text: '八大队' },
+    { value: 1334, text: '九大队' },
+    { value: 1335, text: '十大队' },
+    { value: 1347, text: '十一大队' },
+    { value: 1348, text: '十二大队' }
+  ]
   // studentTable.value.clearSelection()
   await getStudentsList({ CollegeId: selectTeam.value })
   //教员信息
@@ -443,6 +443,7 @@ const selectTeachersList = selections => {
 //选择学员 监听学员选择变化 并更新 selectedStudents
 const selectStudentsList = selections => {
   selectedStudentsLength.value = selections.detail.index.length // 选中学员数量
+  // console.log(selections.detail.index)
   // 限制最多选择20个学员
   // console.log(selectedStudentsLength.value)
   if (selectedStudentsLength.value > 20) {
@@ -450,6 +451,11 @@ const selectStudentsList = selections => {
     //用于在下次 DOM 更新循环结束之后执行延迟回调。
     nextTick(() => {
       studentTable.value.clearSelection()
+      selections.detail.index.slice(0, 20).forEach(item => {
+        studentTable.value.toggleRowSelection(item, true)
+      })
+      selectedStudents.value = selections.detail.index.slice(0, 20).map(index => studentsList.value[index])
+      // console.log(selectedStudents.value)
       uni.showToast({
         title: '一次最多选择20个学员',
         icon: 'none'
@@ -459,6 +465,7 @@ const selectStudentsList = selections => {
   }
   if (selectedStudentsLength.value > 0) {
     selectedStudents.value = selections.detail.index.map(index => studentsList.value[index])
+    // console.log(selectedStudents.value)
   } else {
     selectedStudents.value = []
   }
@@ -614,7 +621,6 @@ const onCancel = () => {
         color: #fff;
       }
     }
-
     .teachers-select {
       position: relative;
       display: flex;
@@ -647,9 +653,9 @@ const onCancel = () => {
       .select-button {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 2.1973rpx /* 3px -> 2.1973rpx */;
-        padding: 0;
+        justify-content: flex-start;
+        // gap: 2px;
+        padding-left: 2.1973rpx /* 3px -> 2.1973rpx */;
         // margin: 0 0 0 4.3945rpx /* 6px -> 4.3945rpx */;
         margin-left: 4.3945rpx /* 6px -> 4.3945rpx */;
         width: 73.2422rpx /* 100px -> 73.2422rpx */;
@@ -666,28 +672,37 @@ const onCancel = () => {
       .teacher-list {
         position: absolute;
         z-index: 10;
-        top: 33.6914rpx /* 46px -> 33.6914rpx */;
+        top: 38.0859rpx /* 52px -> 38.0859rpx */;
         left: 62.2559rpx /* 85px -> 62.2559rpx */;
-        // background-color: rgb(25, 76, 219);
-        background-color: #fff;
-        padding: 0 3.6621rpx /* 5px -> 3.6621rpx */ 3.6621rpx /* 5px -> 3.6621rpx */;
-        margin: 0;
-        width: 95.2148rpx /* 130px -> 95.2148rpx */;
-        max-height: 333.252rpx /* 455px -> 333.252rpx */;
-        border-radius: 5px;
-        overflow: auto; /* 添加垂直滚动条 */
-        // scrollbar-width: thin; /* 适用于Firefox */
-        // scrollbar-color: #c61212 #e0e0e0; /* 滚动条颜色，适用于Firefox */
-        .checkbox {
+        .checkbox-group {
           display: flex;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-          font-weight: 40073;
-          height: 20.5078rpx /* 28px -> 20.5078rpx */;
-          line-height: 20.5078rpx /* 28px -> 20.5078rpx */;
-          padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
-          margin-top: 3.6621rpx /* 5px -> 3.6621rpx */;
-          background-color: #e9e9e9;
+          // flex-direction: column;
+          flex-wrap: wrap;
+          // align-items: center;
+          align-content: flex-start;
+          justify-content: space-around;
+          // background-color: rgb(25, 76, 219);
+          background-color: #ffffff;
+          padding: 3.6621rpx /* 5px -> 3.6621rpx */;
+          margin: 0;
+          width: 164.7949rpx /* 225px -> 164.7949rpx */;
+          max-height: 314.9414rpx /* 430px -> 314.9414rpx */;
           border-radius: 5px;
+          overflow: auto; /* 添加垂直滚动条 */
+          // scrollbar-width: thin; /* 适用于Firefox */
+          // scrollbar-color: #c61212 #e0e0e0; /* 滚动条颜色，适用于Firefox */
+          .checkbox {
+            display: flex;
+            font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+            font-weight: 40073;
+            width: 69.5801rpx /* 95px -> 69.5801rpx */;
+            height: 20.5078rpx /* 28px -> 20.5078rpx */;
+            line-height: 20.5078rpx /* 28px -> 20.5078rpx */;
+            padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
+            margin: 3.6621rpx /* 5px -> 3.6621rpx */ 0;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+          }
         }
         ::v-deep {
           .uni-label-pointer {
@@ -708,6 +723,12 @@ const onCancel = () => {
               height: 35px;
             }
           }
+        }
+        .checkbox-group-none {
+          width: 172.1191rpx /* 235px -> 172.1191rpx */;
+          padding: 5.8594rpx /* 8px -> 5.8594rpx */;
+          background-color: #e0e0e0;
+          border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
         }
       }
     }

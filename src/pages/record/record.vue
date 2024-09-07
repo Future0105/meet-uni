@@ -184,6 +184,13 @@ const getRecord = async (data = {}) => {
 }
 
 const updata = async () => {
+  teamsList.value = [
+    { value: 1, text: '教育矫治所' },
+    { value: 2, text: '一大队' },
+    { value: 3, text: '二大队' },
+    { value: 4, text: '三大队' },
+    { value: 5, text: '安保大队' }
+  ]
   studentsList.value = [
     {
       studentId: 1001,

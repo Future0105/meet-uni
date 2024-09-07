@@ -2,7 +2,18 @@
 // const BASE_URL = 'https://tea.qingnian8.com/api/bizhi'
 // const BASE_URL = 'https://zj.v.api.aa1.cn/api/Age-calculation' //生肖
 // const BASE_URL = 'http://192.168.0.118:86/api/WisdomVisit'
-const DEFAULT_BASE_URL = 'http://23.84.152.249:90/api/WisdomVisit'
+// const DEFAULT_BASE_URL = 'http://23.84.152.249:90/api/WisdomVisit'
+let BASE_URL = uni.getStorageSync('BASE_URL') || '192.168.0.118:86'
+// 设置新的 BASE_URL 并保存到本地存储
+export const setBaseUrl = (newUrl) => {
+  BASE_URL = newUrl;
+  uni.setStorageSync('BASE_URL', newUrl);  // 持久化保存新的 BASE_URL
+}
+
+// 获取当前的 BASE_URL
+export const getBaseUrl = () => {
+  return BASE_URL;
+}
 // 请求拦截器
 function requestInterceptor(options) {
   // 从本地存储获取 token
@@ -58,7 +69,7 @@ function request({ url, method = 'GET', data = {}, header = {} }) {
           'Content-Type': 'application/json' // 默认的 Content-Type
         };
     */
-    // 创建 options 对象
+    // 创建 options 对象,解构赋值
     let options = {
       url,    // 接口地址
       method, // 请求方法
@@ -66,13 +77,13 @@ function request({ url, method = 'GET', data = {}, header = {} }) {
       header
       // header: { ...defaultHeaders, ...header }// 合并默认请求头和传入的请求头
     }
-    // 尝试从本地存储获取 BASE_URL
-    let baseUrl = uni.getStorageSync('BASE_URL') || DEFAULT_BASE_URL;
+    // // 尝试从本地存储获取 BASE_URL
+    // let baseUrl = uni.getStorageSync('BASE_URL') || DEFAULT_BASE_URL;
     options = requestInterceptor(options); // 调用请求拦截器
     // 发起请求
     uni.request({
       ...options, // 展开请求配置对象，将 options 对象中的所有属性展开到新的对象中
-      url: baseUrl + options.url, // 将 BASE_URL 与 options.url 拼接成完整的请求 URL
+      url: 'http://' + getBaseUrl() + '/api/WisdomVisit' + options.url, // 将 BASE_URL 与 options.url 拼接成完整的请求 URL
       success: (response) => {
         const processedResponse = responseInterceptor(response); // 调用响应拦截器处理响应
         if (processedResponse.success) {

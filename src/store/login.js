@@ -1,19 +1,17 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
+import { redirectTo } from '@/utils/to.js'
 import { login_API, getTeamsList_API } from '@/api/data' //getTeachersList_API
 export const userLoginStore = defineStore("login", () => {
   const loginInfo = ref({}) //登录信息 {Id: 177, RealName: '超级管理员', CollegeId: 2, CollegeName: '重庆市女子监狱'}
   const teamsList = ref([]) //部门列表
-  // const teachersList = ref([]) //教员列表
   //登录
   const login = async ({ UserName, Password }) => {
     const loginInfoRes = await login_API({ UserName, Password })
     if (loginInfoRes.code === 200) {
       loginInfo.value = loginInfoRes.data
       // console.log(loginInfo.value)
-      uni.redirectTo({
-        url: '/pages/tackout/tackout'
-      })
+      redirectTo('/pages/tackout/tackout')
     } else if (loginInfoRes.code === 400) {
       uni.showToast({
         title: loginInfoRes.message,
@@ -30,9 +28,7 @@ export const userLoginStore = defineStore("login", () => {
     loginInfo.value = {}
     teamsList.value = []
     // teachersList.value = []
-    uni.redirectTo({
-      url: '/pages/login/login'
-    })
+    redirectTo('/pages/login/login')
   }
   //获取部门列表
   const getTeamsList = async () => {

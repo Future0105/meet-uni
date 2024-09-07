@@ -1,5 +1,6 @@
 <template>
   <view class="studentInfo">
+    <ChangeStudentInfo v-if="showChangeInfo" @confirm="onConfirm" @cancel="onCancel" />
     <view class="header">
       <view class="search-info">
         <view class="student-name inp">
@@ -34,7 +35,7 @@
     </view>
     <view class="main">
       <view class="student-list">
-        <uni-table border emptyText="暂无更多数据">
+        <uni-table :border="true" emptyText="暂无更多数据">
           <uni-tr>
             <!-- <uni-th width="65" align="center">姓名</uni-th>
             <uni-th width="165" align="center">身份证号</uni-th>
@@ -47,17 +48,16 @@
             <uni-th width="90" align="center">入所时间</uni-th>
             <uni-th width="90" align="center">解教时间</uni-th>
             <uni-th width="20" align="center">操作</uni-th> -->
-            <uni-th width="110" align="center">姓名</uni-th>
-            <uni-th width="" align="center">身份证号</uni-th>
-            <uni-th width="60" align="center">性别</uni-th>
+            <uni-th width="100" align="center">姓名</uni-th>
+            <uni-th width="260" align="center">身份证号</uni-th>
+            <uni-th width="50" align="center">性别</uni-th>
             <uni-th width="295" align="center">家庭住址</uni-th>
-            <uni-th width="170" align="center">所在大队</uni-th>
-            <uni-th width="80" align="center">关注等级</uni-th>
-            <uni-th width="80" align="center">学员状态</uni-th>
-            <uni-th width="80" align="center">在队状态</uni-th>
+            <uni-th width="160" align="center">所在大队</uni-th>
+            <uni-th width="75" align="center">关注等级</uni-th>
+            <uni-th width="75" align="center">学员状态</uni-th>
+            <uni-th width="75" align="center">在队状态</uni-th>
             <uni-th width="150" align="center">入所时间</uni-th>
-            <uni-th width="150" align="center">解教时间</uni-th>
-            <uni-th width="90" align="center">操作</uni-th>
+            <uni-th width="200" align="center">操作</uni-th>
           </uni-tr>
           <uni-tr v-for="item in studentsList" :key="item.Id">
             <uni-td align="center" :class="{ face: item.IsFace === 1 }">{{ item.RealName }}</uni-td>
@@ -71,24 +71,16 @@
             <uni-td align="center">{{ item.DepartPath }}</uni-td>
             <uni-td align="center">{{ item.CollegeName }}</uni-td>
             <uni-td align="center"
-              ><uni-easyinput
-                v-model="item.AttentLevelName"
-                type="text"
-                :clearable="false"
-                :inputBorder="false"
-                placeholder="无"
-                @change="InpState($event, item)"
-                :styles="{ color: '#606266' }"
-              ></uni-easyinput>
+              >{{ item.AttentLevelName }}
               <!-- <input v-model="item.AttentLevelName" placeholder="待设置" @blur="InpState($event, item)"/> -->
             </uni-td>
             <uni-td align="center">{{ item.CadetStateName }}</uni-td>
             <uni-td align="center">{{ item.InTeamStateName }}</uni-td>
             <uni-td align="center">{{ item.FrozenDateTime }}</uni-td>
-            <uni-td align="center">{{ item.RoundTime }}</uni-td>
             <uni-td>
-              <view class="face-btn">
+              <view class="student-info-btn">
                 <button @click="getFace(item.Id)" class="face" size="mini">人脸采集</button>
+                <button @click="changeInfo(item.Id)" class="change-info" size="mini">修改</button>
               </view>
             </uni-td>
           </uni-tr>
@@ -103,6 +95,7 @@
 </template>
 
 <script setup>
+import ChangeStudentInfo from './ChangeStudentInfo.vue'
 import { getStudentsInfo_API } from '@/api/data'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
@@ -111,12 +104,12 @@ import { debounce, throttle } from 'lodash' //防抖与节流
 
 //学员列表
 const studentsList = ref([])
-//所有队伍列表
-const teamsList = ref([])
 //名字搜索
 const searchName = ref('')
 //地址搜索
 const searchAddress = ref('')
+//所有队伍列表
+const teamsList = ref([])
 //下拉框选中队伍(默认为当前登录大队)
 const selectTeam = ref('')
 //展示数据(0默认全部数据)
@@ -132,6 +125,26 @@ const showData = ref([
 ])
 const show = ref(showData.value[0].value)
 
+const showChangeInfo = ref(false)
+const ChangeStudentId = ref(null)
+//学员详细信息弹窗
+const changeInfo = Id => {
+  showChangeInfo.value = true //学员信息弹窗
+  ChangeStudentId.value = Id // 学员信息Id
+}
+//隐藏学员详细信息弹窗
+const hideChangeInfo = () => {
+  showChangeInfo.value = false ////隐藏学员信息弹窗
+}
+// 弹窗确认
+const onConfirm = async value => {
+  console.log('确认')
+  hideChangeInfo()
+}
+//弹窗取消操作
+const onCancel = () => {
+  hideChangeInfo()
+}
 //一页十条
 const pageSize = 6
 // 当前页码
@@ -183,21 +196,6 @@ onLoad(async () => {
   if (teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId)) {
     selectTeam.value = teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId).value
   }
-  // console.log(
-  //   'RealName: ',
-  //   searchName.value,
-  //   'DepartPath: ',
-  //   searchAddress.value,
-  //   'CollegeId:',
-  //   selectTeam.value,
-  //   'SearchType:',
-  //   show.value,
-  //   // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
-  //   'PageShowNum:',
-  //   pageSize,
-  //   'PageNum:',
-  //   pageCurrent.value
-  // )
   await getStudentsInfo({
     RealName: searchName.value,
     DepartPath: searchAddress.value,
@@ -219,6 +217,13 @@ const showDataChange = e => {
 
 const updata = async () => {
   // console.log('SearchType:', show.value)
+  teamsList.value = [
+    { value: 1, text: '教育矫治所' },
+    { value: 2, text: '一大队' },
+    { value: 3, text: '二大队' },
+    { value: 4, text: '三大队' },
+    { value: 5, text: '安保大队' }
+  ]
   studentsList.value = [
     {
       RealName: '张三啊',
@@ -250,7 +255,7 @@ const updata = async () => {
       RealName: '张五',
       IDCardNo: 4352,
       Sex: '男',
-      DepartPath: '13618206431',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
       CollegeName: '李涛',
       AttentLevelName: '一级',
       CadetStateName: '男',
@@ -263,7 +268,7 @@ const updata = async () => {
       RealName: '张三',
       IDCardNo: 4350,
       Sex: '男',
-      DepartPath: '13618206431',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
       CollegeName: '李涛',
       AttentLevelName: '一级',
       CadetStateName: '男',
@@ -276,7 +281,7 @@ const updata = async () => {
       RealName: '张四',
       IDCardNo: 4351,
       Sex: '男',
-      DepartPath: '13618206431',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
       CollegeName: '李涛',
       AttentLevelName: '一级',
       CadetStateName: '男',
@@ -289,7 +294,7 @@ const updata = async () => {
       RealName: '张五',
       IDCardNo: 4352,
       Sex: '男',
-      DepartPath: '13618206431',
+      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
       CollegeName: '李涛',
       AttentLevelName: '一级',
       CadetStateName: '男',
@@ -363,185 +368,8 @@ const updata = async () => {
   //   'PageNum:',
   //   pageCurrent.value
   // )
-  // studentsList.value = [
-  //   {
-  //     AttentLevelName: '一级一级',
-  //     CadetStateName: '正常一级',
-  //     CollegeName: '一大一大队队',
-  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
-  //     FrozenDateTime: '2020-01-10 00:00:00',
-  //     Id: 5002444200010101000,
-  //     InTeamStateName: '在所',
-  //     RealName: '王二大山',
-  //     RoundTime: '2024-08-31 00:00:00',
-  //     Sex: '男',
-  //     IsFace: 1
-  //   },
-  //   {
-  //     AttentLevelName: '二级',
-  //     CadetStateName: '生病',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市巴南区南泉镇3社47号',
-  //     FrozenDateTime: '2023-06-15 00:00:00',
-  //     Id: 4352,
-  //     InTeamStateName: '刑事拘留',
-  //     RealName: '张三',
-  //     RoundTime: '2024-08-15 00:00:00',
-  //     Sex: '男',
-  //     IsFace: 0
-  //   },
-  //   {
-  //     AttentLevelName: '一级',
-  //     CadetStateName: '正常',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
-  //     FrozenDateTime: '2020-01-10 00:00:00',
-  //     Id: 4353,
-  //     InTeamStateName: '在所',
-  //     RealName: '王二',
-  //     RoundTime: '2024-08-31 00:00:00',
-  //     Sex: '男',
-  //     IsFace: 0
-  //   },
-  //   {
-  //     AttentLevelName: '二级',
-  //     CadetStateName: '生病',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市巴南区南泉镇3社47号',
-  //     FrozenDateTime: '2023-06-15 00:00:00',
-  //     Id: 4354,
-  //     InTeamStateName: '刑事拘留',
-  //     RealName: '张三',
-  //     RoundTime: '2024-08-15 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '一级',
-  //     CadetStateName: '正常',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
-  //     FrozenDateTime: '2020-01-10 00:00:00',
-  //     Id: 4355,
-  //     InTeamStateName: '在所',
-  //     RealName: '王二',
-  //     RoundTime: '2024-08-31 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '二级',
-  //     CadetStateName: '生病',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市巴南区南泉镇3社47号',
-  //     FrozenDateTime: '2023-06-15 00:00:00',
-  //     Id: 4356,
-  //     InTeamStateName: '刑事拘留',
-  //     RealName: '张三',
-  //     RoundTime: '2024-08-15 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '一级',
-  //     CadetStateName: '正常',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
-  //     FrozenDateTime: '2020-01-10 00:00:00',
-  //     Id: 4357,
-  //     InTeamStateName: '在所',
-  //     RealName: '王二',
-  //     RoundTime: '2024-08-31 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '二级',
-  //     CadetStateName: '生病',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市巴南区南泉镇3社47号',
-  //     FrozenDateTime: '2023-06-15 00:00:00',
-  //     Id: 4358,
-  //     InTeamStateName: '刑事拘留',
-  //     RealName: '张三',
-  //     RoundTime: '2024-08-15 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '一级',
-  //     CadetStateName: '正常',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
-  //     FrozenDateTime: '2020-01-10 00:00:00',
-  //     Id: 4359,
-  //     InTeamStateName: '在所',
-  //     RealName: '王二',
-  //     RoundTime: '2024-08-31 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '二级',
-  //     CadetStateName: '生病',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市巴南区南泉镇3社47号',
-  //     FrozenDateTime: '2023-06-15 00:00:00',
-  //     Id: 4360,
-  //     InTeamStateName: '刑事拘留',
-  //     RealName: '张三',
-  //     RoundTime: '2024-08-15 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '一级',
-  //     CadetStateName: '正常',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
-  //     FrozenDateTime: '2020-01-10 00:00:00',
-  //     Id: 4361,
-  //     InTeamStateName: '在所',
-  //     RealName: '王二',
-  //     RoundTime: '2024-08-31 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '二级',
-  //     CadetStateName: '生病',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市巴南区南泉镇3社47号',
-  //     FrozenDateTime: '2023-06-15 00:00:00',
-  //     Id: 4362,
-  //     InTeamStateName: '刑事拘留',
-  //     RealName: '张三',
-  //     RoundTime: '2024-08-15 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '一级',
-  //     CadetStateName: '正常',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市九龙坡区华岩镇西站村9社203号',
-  //     FrozenDateTime: '2020-01-10 00:00:00',
-  //     Id: 4363,
-  //     InTeamStateName: '在所',
-  //     RealName: '王二',
-  //     RoundTime: '2024-08-31 00:00:00',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     AttentLevelName: '二级',
-  //     CadetStateName: '生病',
-  //     CollegeName: '一大队',
-  //     DepartPath: '重庆市巴南区南泉镇3社47号',
-  //     FrozenDateTime: '2023-06-15 00:00:00',
-  //     Id: 4364,
-  //     InTeamStateName: '刑事拘留',
-  //     RealName: '张三',
-  //     RoundTime: '2024-08-15 00:00:00',
-  //     Sex: '男'
-  //   }
-  // ]
 }
-//学员状态,输入框
-const InpState = (e, item) => {
-  console.log(e)
-  console.log(item)
-}
+
 //人脸采集 防抖必须停止触发行为后才可以再次触发
 //leading延迟开始前调用  trailing延迟结束后调用
 const getFace = debounce(
@@ -590,6 +418,11 @@ const getFace = debounce(
       border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
       background-color: #00aaff;
       color: #fff;
+      text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
     .search-info {
       display: flex;
@@ -688,6 +521,9 @@ const getFace = debounce(
             overflow: hidden;
           }
         }
+        .uni-select__input-placeholder {
+          color: #999999;
+        }
         //下拉最大高度
         .uni-select__selector-scroll {
           background-color: #fff;
@@ -752,45 +588,6 @@ const getFace = debounce(
       border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
       overflow-y: auto; /* 添加垂直滚动条 */
       ::v-deep {
-        //状态输入框
-        .uni-easyinput {
-          text-align: center;
-          // font-size: 11.7188rpx /* 16px -> 11.7188rpx */ !important;
-        }
-        .uni-easyinput__content-input {
-          padding: 0 !important;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-        }
-        .uni-easyinput__content {
-          background-color: transparent !important;
-        }
-        .uni-input-placeholder {
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-        }
-        // .uni-easyinput {
-        //   text-align: center;
-        //   .is-input-border {
-        //     border: none;
-        //   }
-        //   .uni-easyinput__content {
-        //     color: #606266;
-        //     background-color: transparent !important;
-        //   }
-        //   .uni-easyinput__content-textarea {
-        //     height: 80px;
-        //     line-height: 80px;
-        //     font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-        //   }
-        //   .uni-textarea-placeholder {
-        //     font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-        //   }
-        //   .uni-easyinput__content-textarea {
-        //     margin: 0;
-        //   }
-        //   .input-padding {
-        //     padding: 0;
-        //   }
-        // }
         //表头
         .uni-table-th {
           height: 32.959rpx /* 45px -> 32.959rpx */;
@@ -839,23 +636,40 @@ const getFace = debounce(
           font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
         }
       }
-
-      .face-btn {
-        // margin: 0;
-        // padding: 0;
+      .student-info-btn {
         display: flex;
         align-items: center;
-        justify-content: center;
-        // background-color: #00aaff;
+        justify-content: space-around;
         .face {
-          width: 43.9453rpx /* 60px -> 43.9453rpx */;
-          margin: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           padding: 0;
-          padding: 3.6621rpx /* 5px -> 3.6621rpx */;
-          background-color: rgba(0, 157, 255, 0.1);
+          margin: 0;
+          width: 43.9453rpx /* 60px -> 43.9453rpx */;
+          height: 21.9727rpx /* 30px -> 21.9727rpx */;
+          // background-color: rgb(253, 218, 101);
           font-size: 8.7891rpx /* 12px -> 8.7891rpx */;
           color: #00aaff;
           border: #00aaff 1px solid;
+          background-color: rgba(0, 157, 255, 0.1);
+          white-space: nowrap;
+          overflow: hidden;
+          // text-overflow: ellipsis;
+        }
+        .change-info {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          margin: 0;
+          width: 43.9453rpx /* 60px -> 43.9453rpx */;
+          height: 21.9727rpx /* 30px -> 21.9727rpx */;
+          // background-color: rgb(253, 218, 101);
+          font-size: 8.7891rpx /* 12px -> 8.7891rpx */;
+          color: #ff5722;
+          background-color: rgba(255, 107, 70, 0.1);
+          border: 1px #ff5722 solid;
           white-space: nowrap;
           overflow: hidden;
         }

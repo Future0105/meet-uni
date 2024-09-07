@@ -1,4 +1,3 @@
-<!-- CustomModal.vue -->
 <template>
   <view class="notOut">
     <view class="modal" @click.stop>
@@ -61,21 +60,21 @@ const getReasonsList = async () => {
 
 //组件加载
 onLoad(async () => {
-  // reasons.value = [
-  //   { Name: '不带出' },
-  //   { Name: '不带出' },
-  //   { Name: '不带出' },
-  //   { Name: '不带出' },
-  //   { Name: '不带出' },
-  //   { Name: '不带出' }
-  // ]
+  reasons.value = [
+    { Id: 1, Name: '不带出理由1' },
+    { Id: 2, Name: '不带出2' },
+    { Id: 3, Name: '不带出3' },
+    { Id: 4, Name: '不带出4' },
+    { Id: 5, Name: '不带出5' },
+    { Id: 6, Name: '不带出6' }
+  ]
   //获取不带出理由列表
   await getReasonsList()
 })
 
 //选择原因发送变化
 const onChange = event => {
-  selectedReason.value = event.detail.value
+  selectedReason.value = event.detail.value.Id
   //-----------------------------------------------------------
   // if (selectedReason.value !== 'other') {
   //   otherReason.value = '' // 如果不是其他理由，清空自定义理由文本
@@ -87,7 +86,7 @@ const onChange = event => {
 const handleConfirm = () => {
   if (selectedReason.value) {
     // 非其他理由
-    emits('confirm', selectedReason.value.Id)
+    emits('confirm', selectedReason.value) //selectedReason.value = {Id: 7, Name: '不带出理由7'}
     selectedReason.value = ''
   } else {
     uni.showToast({
@@ -148,7 +147,6 @@ const handleCancel = () => {
     background-color: #fff;
     max-height: 292.9688rpx /* 400px -> 292.9688rpx */;
     width: 30%;
-    max-width: 366.2109rpx /* 500px -> 366.2109rpx */;
     border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
     overflow: auto;
     .modal-header {
@@ -179,7 +177,7 @@ const handleCancel = () => {
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
-        // text-overflow: ellipsis;
+        text-overflow: ellipsis;
       }
       .textarea {
         width: 100%;
@@ -193,6 +191,7 @@ const handleCancel = () => {
       }
     }
     .modal-footer {
+      background-color: #f2f2f2;
       // margin-top: 3.6621rpx /* 5px -> 3.6621rpx */;
       height: 43.9453rpx /* 60px -> 43.9453rpx */;
       display: flex;

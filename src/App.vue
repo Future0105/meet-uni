@@ -31,7 +31,6 @@ export default {
 /* 加载自定义样式 */
 @import './custom/custom.scss';
 page {
-  
   background: #f8f8f8;
 }
 </style>

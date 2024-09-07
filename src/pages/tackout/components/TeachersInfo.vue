@@ -1,5 +1,6 @@
 <template>
   <view class="studentInfo">
+    <ChangeTeacherInfo v-if="showChangeInfo" @confirm="onConfirm" @cancel="onCancel" />
     <view class="header">
       <view class="search-info">
         <view class="student-name inp">
@@ -39,15 +40,15 @@
     </view>
     <view class="main">
       <view class="teacher-list">
-        <uni-table border emptyText="暂无更多数据">
+        <uni-table :border="true" emptyText="暂无更多数据">
           <uni-tr>
-            <uni-th width="160" align="center">姓名</uni-th>
-            <uni-th width="220" align="center">警号</uni-th>
-            <uni-th width="150" align="center">重名标识</uni-th>
+            <uni-th width="140" align="center">姓名</uni-th>
+            <uni-th width="260" align="center">警号</uni-th>
+            <uni-th width="160" align="center">重名标识</uni-th>
             <uni-th width="80" align="center">性别</uni-th>
-            <uni-th width="160" align="center">所在部门</uni-th>
-            <uni-th width="200" align="center">联系电话</uni-th>
-            <uni-th width="100" align="center">操作</uni-th>
+            <uni-th width="260" align="center">所在部门</uni-th>
+            <uni-th width="180" align="center">联系电话</uni-th>
+            <uni-th width="160" align="center">操作</uni-th>
           </uni-tr>
           <uni-tr v-for="item in teachersList" :key="item.Id">
             <uni-td align="center" :class="{ face: item.IsFace === 1 }">{{ item.RealName }}</uni-td>
@@ -59,6 +60,7 @@
             <uni-td>
               <view class="face-btn">
                 <button @click="getFace(item.Id)" class="face" size="mini">人脸采集</button>
+                <button @click="changeInfo(item.Id)" class="change-info" size="mini">修改</button>
               </view>
             </uni-td>
           </uni-tr>
@@ -73,6 +75,7 @@
 </template>
 
 <script setup>
+import ChangeTeacherInfo from './ChangeTeacherInfo.vue'
 import { getTeachersInfo_API } from '@/api/data'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
@@ -88,6 +91,10 @@ const searchName = ref('')
 const searchTeacherId = ref('')
 //下拉框选中队伍(默认为当前登录大队)
 const selectTeam = ref('')
+
+const showChangeInfo = ref(false)
+const ChangeTeacherId = ref(null)
+
 //展示数据(0默认全部数据)
 const showData = ref([
   {
@@ -99,9 +106,10 @@ const showData = ref([
     value: 1
   }
 ])
+
 const show = ref(showData.value[0].value)
 //一页数据量
-const pageSize = 7
+const pageSize = 8
 // 当前页码
 const pageCurrent = ref(1)
 //数据总数
@@ -166,6 +174,25 @@ onLoad(async () => {
   // console.log(total.value)
 })
 
+//民警详细信息弹窗
+const changeInfo = Id => {
+  showChangeInfo.value = true //民警信息弹窗
+  ChangeTeacherId.value = Id // 民警信息Id
+}
+
+//隐藏民警详细信息弹窗
+const hideChangeInfo = () => {
+  showChangeInfo.value = false ////隐藏民警信息弹窗
+}
+// 弹窗确认
+const onConfirm = async value => {
+  console.log('确认')
+  hideChangeInfo()
+}
+//弹窗取消操作
+const onCancel = () => {
+  hideChangeInfo()
+}
 //改变队伍
 const teamChange = e => {
   selectTeam.value = e
@@ -182,6 +209,109 @@ const updata = async () => {
   //   SearchType: 0
   // })
   // console.log(show.value)
+  teamsList.value = [
+    { value: 1, text: '教育矫治所' },
+    { value: 2, text: '一大队' },
+    { value: 3, text: '二大队' },
+    { value: 4, text: '三大队' },
+    { value: 5, text: '安保大队' }
+  ]
+  teachersList.value = [
+    {
+      CollegeName: '重庆市北碚区教育矫治所',
+      Id: 4350,
+      PersonNo: '500222190010101234',
+      Phone: '13618206431',
+      RealName: '李涛李涛',
+      Remark: '李涛重名标识',
+      Sex: '男',
+      IsFace: 1
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛涛',
+      Remark: '李涛重名标识',
+      Sex: '男',
+      IsFace: 0
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛李涛',
+      Remark: '李涛重名标识',
+      Sex: '男',
+      IsFace: 1
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男',
+      IsFace: 0
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    },
+    {
+      CollegeName: '一大队',
+      Id: 4350,
+      PersonNo: '100016110',
+      Phone: '13618206431',
+      RealName: '李涛',
+      Remark: '李涛重名标识',
+      Sex: '男'
+    }
+  ]
   pageCurrent.value = 1
   await getTeachersInfo({
     RealName: searchName.value,
@@ -191,109 +321,6 @@ const updata = async () => {
     PageShowNum: pageSize,
     PageNum: pageCurrent.value
   })
-  // teachersList.value = [
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男',
-  //     IsFace: 1
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男',
-  //     IsFace: 0
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男',
-  //     IsFace: 1
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男',
-  //     IsFace: 0
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男'
-  //   },
-  //   {
-  //     CollegeName: '一大队',
-  //     Id: 4350,
-  //     PersonNo: '100016110',
-  //     Phone: '13618206431',
-  //     RealName: '李涛',
-  //     Remark: '李涛重名标识',
-  //     Sex: '男'
-  //   }
-  // ]
-  // uni
-  //   .request({
-  //     url: `http://23.84.142.247:90/api/WisdomVisit/Pad_GetPolicemanInfoList?RealName=''&SearchType=0`
-  //   })
-  //   .then(res => {
-  //     console.log('民警信息获取', res)
-  //   })
 }
 //人脸采集
 //leading延迟开始前调用  trailing延迟结束后调用
@@ -343,6 +370,11 @@ const getFace = debounce(
       border-radius: 3.6621rpx /* 5px -> 3.6621rpx */;
       background-color: #00aaff;
       color: #fff;
+      text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
     .search-info {
       display: flex;
@@ -440,6 +472,9 @@ const getFace = debounce(
             text-overflow: ellipsis;
             overflow: hidden;
           }
+        }
+        .uni-select__input-placeholder {
+          color: #999999;
         }
         //下拉最大高度
         .uni-select__selector-scroll {
@@ -557,17 +592,38 @@ const getFace = debounce(
         // padding: 0;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-around;
         // background-color: #00aaff;
         .face {
-          width: 43.9453rpx /* 60px -> 43.9453rpx */;
-          margin: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           padding: 0;
-          padding: 3.6621rpx /* 5px -> 3.6621rpx */;
-          background-color: rgba(0, 157, 255, 0.1);
+          margin: 0;
+          width: 43.9453rpx /* 60px -> 43.9453rpx */;
+          height: 21.9727rpx /* 30px -> 21.9727rpx */;
+          // background-color: rgb(253, 218, 101);
           font-size: 8.7891rpx /* 12px -> 8.7891rpx */;
           color: #00aaff;
           border: #00aaff 1px solid;
+          background-color: rgba(0, 157, 255, 0.1);
+          white-space: nowrap;
+          overflow: hidden;
+          // text-overflow: ellipsis;
+        }
+        .change-info {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          margin: 0;
+          width: 43.9453rpx /* 60px -> 43.9453rpx */;
+          height: 21.9727rpx /* 30px -> 21.9727rpx */;
+          // background-color: rgb(253, 218, 101);
+          font-size: 8.7891rpx /* 12px -> 8.7891rpx */;
+          color: #ff5722;
+          background-color: rgba(255, 107, 70, 0.1);
+          border: 1px #ff5722 solid;
           white-space: nowrap;
           overflow: hidden;
         }

@@ -5,10 +5,10 @@
       <view class="header">
         <image @click="logoClick" class="logo-img" src="@/static/image/logo/bigpic.png" mode="widthFix" />
       </view>
+      <!-- 点击6次logo,设置IP弹窗 -->
       <uni-popup ref="popup" :mask-click="false" type="center">
         <view class="popup-content">
           <view class="popup-title">IP地址设置</view>
-
           <view class="popup-input">
             <uni-easyinput v-model="newBaseUrl" placeholder="请输入IP地址" />
           </view>
@@ -69,7 +69,7 @@
 
 <script setup>
 import { userLoginStore } from '@/store/login.js'
-// import { onLoad } from '@dcloudio/uni-app'
+import { setBaseUrl } from '@/utils/request.js' // 导入设置IP setBaseUrl 函数
 import { ref } from 'vue'
 const loginStore = userLoginStore()
 //登录表单数据
@@ -77,18 +77,22 @@ const formData = ref({
   UserName: '', //账号
   Password: '' //密码
 })
+//输入框聚焦,页面上移做到键盘输入不遮挡
 const isFocusInp = ref(false)
 const focusInp = () => {
   isFocusInp.value = true
-  // console.log('focusInp')
 }
+//输入框失焦,页面恢复
 const blurInp = () => {
   isFocusInp.value = false
-  // console.log('blurInp')
 }
+//点击logo计数
 const clickCount = ref(0)
+//获取弹出框实例
 const popup = ref(null)
+//输入设置Ip
 const newBaseUrl = ref('')
+//logo点击事件
 const logoClick = () => {
   clickCount.value++
   if (clickCount.value === 6) {
@@ -98,14 +102,35 @@ const logoClick = () => {
     clickCount.value = 0
   }
 }
+//显示ip设置弹窗
 const showPopup = () => {
   popup.value.open()
 }
-
+//取消,隐藏ip设置弹窗
 const handleCancel = () => {
   popup.value.close()
   newBaseUrl.value = ''
 }
+// 确定,设置Ip
+const handleConfirm = () => {
+  if (newBaseUrl.value) {
+    setIP()
+    // 关闭弹窗
+    handleCancel()
+    uni.showToast({
+      title: '设置IP地址成功',
+      icon: 'none',
+      duration: 1000
+    })
+  } else {
+    uni.showToast({
+      title: '请输入有效的IP地址',
+      icon: 'none',
+      duration: 2000
+    })
+  }
+}
+//将输入IP值传递android,等待校验
 const setIP = () => {
   if (uni.getSystemInfoSync().platform === 'android') {
     window.android.H5ToAndroid(
@@ -115,27 +140,18 @@ const setIP = () => {
       })
     )
   }
+  //等待返回是否正确
+  // 假设 newBaseUrl.value 是新的基地址，调用 setBaseUrl 更新并保存到本地存储
+  // setBaseUrl(newBaseUrl.value)
 }
-
-const handleConfirm = () => {
-  if (newBaseUrl.value) {
-    setIP()
-    // 关闭弹窗
-    handleCancel()
-  } else {
-    uni.showToast({
-      title: '请输入有效的IP地址',
-      icon: 'none',
-      duration: 2000
-    })
-  }
-}
+//安卓返回校验
 // const getBaseUrl = () => {
 //   if (uni.getSystemInfoSync().platform === 'android') {
 //     window.android.H5ToAndroid('FACE_COLLECT')
 //   }
 // }
-//表单组件验证规则
+
+//表单组件验证规则(用户名,密码)
 const rules = {
   UserName: {
     rules: [
@@ -300,19 +316,19 @@ const submitForm = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 168.457rpx /* 230px -> 168.457rpx */;
+  width: 219.7266rpx /* 300px -> 219.7266rpx */;
   // height: 146.4844rpx /* 200px -> 146.4844rpx */;
-  padding: 20px;
+  padding: 7.3242rpx /* 10px -> 7.3242rpx */ 14.6484rpx /* 20px -> 14.6484rpx */;
   background-color: rgb(255, 255, 255);
   border-radius: 10px;
   .popup-title {
-    font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
-    height: 29.2969rpx /* 40px -> 29.2969rpx */;
-    line-height: 29.2969rpx /* 40px -> 29.2969rpx */;
+    font-size: 14.6484rpx /* 20px -> 14.6484rpx */;
+    height: 36.6211rpx /* 50px -> 36.6211rpx */;
+    line-height: 36.6211rpx /* 50px -> 36.6211rpx */;
     color: #000000;
   }
   .popup-input {
-    width: 146.4844rpx /* 200px -> 146.4844rpx */;
+    width: 190.4297rpx /* 260px -> 190.4297rpx */;
     ::v-deep {
       .uni-easyinput__placeholder-class {
         font-size: 10.2539rpx /* 14px -> 10.2539rpx */;

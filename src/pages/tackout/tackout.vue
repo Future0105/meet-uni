@@ -2,7 +2,7 @@
   <view class="container">
     <view class="layout">
       <view class="nav">
-        <button class="btn home" @click="navigateTo('/pages/index/index')">
+        <button class="btn home" @click="redirectTo('/pages/index/index')">
           <uni-icons type="home" size="50"></uni-icons>
           <text>主页</text>
         </button>
@@ -31,7 +31,7 @@
 <script setup>
 // import HeadFill from '../../components/HeadFill/HeadFill.vue'
 import { userLoginStore } from '@/store/login.js'
-import { navigateTo } from '@/utils/to.js'
+import { redirectTo } from '@/utils/to.js' //redirectTo保证返回主页时,清除待带出定时器
 import WaitOut from './components/WaitOut.vue'
 import TodayOut from './components/TodayOut.vue'
 import StudentsInfo from './components/StudentsInfo.vue'
@@ -44,54 +44,14 @@ const loginStore = userLoginStore()
 const selectPage = ref('waitOut')
 //nav点击切换页面
 const changePage = page => {
-  //这里集中清除,组件内部就不用再清除
-  // clearCurrentTimer(); // 在页面切换前清除当前组件的定时器
   selectPage.value = page
 }
 onLoad(async e => {
-  loginStore.getTeamsList()
-  // loginStore.getTeachersList()
+  loginStore.getTeamsList() //获取部门信息,公用
   if (e.page) {
     selectPage.value = e.page
   }
 })
-
-//-------使用redirectTo页面摧毁,组件内部onUnmounted卸载定时器-----
-// (navigateTo页面保留,不会触发onUnmounted)
-// 清除当前活动组件的定时器
-// const clearCurrentTimer = () => {
-//   switch (selectPage.value) {
-//     case 'waitOut':
-//       if (waitOutRef.value && waitOutRef.value) {
-//         waitOutRef.value.clearTimer()
-//       }
-//       break
-//     case 'todayOut':
-//       if (todayOutRef.value && todayOutRef.value) {
-//         todayOutRef.value.clearTimer()
-//       }
-//       break
-//     case 'studentInfo':
-//       if (studentInfoRef.value && studentInfoRef.value) {
-//         studentInfoRef.value.clearTimer()
-//       }
-//       break
-//     case 'familyInfo':
-//       if (familyInfoRef.value && familyInfoRef.value) {
-//         familyInfoRef.value.clearTimer()
-//       }
-//       break
-//     default:
-//       break
-//   }
-// }
-//页面导航时清除定时器并跳转到主页
-// const navigateToHome = () => {
-//   clearCurrentTimer()
-//   // 执行页面跳转
-//   navigateTo('/pages/index/index')
-// }
-//--------------
 </script>
 
 <style scoped lang="scss">

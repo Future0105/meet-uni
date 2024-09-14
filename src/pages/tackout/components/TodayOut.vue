@@ -54,7 +54,7 @@ import { userLoginStore } from '@/store/login.js'
 //所有队伍列表
 const teamsList = ref([])
 //下拉框选中队伍(默认为当前登录大队)
-const selectTeam = ref('')
+const selectTeam = ref(0)
 //带出学员列表
 const studentsList = ref([])
 //今日带出人数
@@ -89,137 +89,141 @@ onLoad(async () => {
 })
 //改变队伍
 const teamChange = e => {
-  selectTeam.value = e
+  if (e) {
+    selectTeam.value = e // e 为选中的部门id
+  } else {
+    selectTeam.value = 0 // 0 所有部门
+  }
 }
 const updata = async () => {
-  teamsList.value = [
-    { value: 1, text: '教育矫治所' },
-    { value: 2, text: '一大队' },
-    { value: 3, text: '二大队' },
-    { value: 4, text: '三大队' },
-    { value: 5, text: '安保大队' }
-  ]
-  studentsList.value = [
-    {
-      Id: 1001,
-      CadetName: '张三张三张三张三张三张三张三',
-      KinName: '张三张三张三张三张三张三张三',
-      CollegeName: '一大一大队一大队一大队一大队队',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1002,
-      CadetName: '广东省深圳市龙岗区',
-      KinName: '广东省深圳市龙岗区',
-      CollegeName: '广东省深圳市龙岗区',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1003,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1004,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1005,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1002,
-      CadetName: '广东省深圳市龙岗区',
-      KinName: '广东省深圳市龙岗区',
-      CollegeName: '广东省深圳市龙岗区',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1003,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1004,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1005,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1002,
-      CadetName: '广东省深圳市龙岗区',
-      KinName: '广东省深圳市龙岗区',
-      CollegeName: '广东省深圳市龙岗区',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1003,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1004,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1005,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1002,
-      CadetName: '广东省深圳市龙岗区',
-      KinName: '广东省深圳市龙岗区',
-      CollegeName: '广东省深圳市龙岗区',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
-    },
-    {
-      Id: 1003,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1004,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    },
-    {
-      Id: 1005,
-      CadetName: '张三',
-      KinName: '张三',
-      CollegeName: '一大队',
-      DepartPath: '广东省深圳市龙岗区'
-    }
-  ]
+  // teamsList.value = [
+  //   { value: 1, text: '教育矫治所' },
+  //   { value: 2, text: '一大队' },
+  //   { value: 3, text: '二大队' },
+  //   { value: 4, text: '三大队' },
+  //   { value: 5, text: '安保大队' }
+  // ]
+  // studentsList.value = [
+  //   {
+  //     Id: 1001,
+  //     CadetName: '张三张三张三张三张三张三张三',
+  //     KinName: '张三张三张三张三张三张三张三',
+  //     CollegeName: '一大一大队一大队一大队一大队队',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '广东省深圳市龙岗区',
+  //     KinName: '广东省深圳市龙岗区',
+  //     CollegeName: '广东省深圳市龙岗区',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '广东省深圳市龙岗区',
+  //     KinName: '广东省深圳市龙岗区',
+  //     CollegeName: '广东省深圳市龙岗区',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '广东省深圳市龙岗区',
+  //     KinName: '广东省深圳市龙岗区',
+  //     CollegeName: '广东省深圳市龙岗区',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '广东省深圳市龙岗区',
+  //     KinName: '广东省深圳市龙岗区',
+  //     CollegeName: '广东省深圳市龙岗区',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '张三',
+  //     KinName: '张三',
+  //     CollegeName: '一大队',
+  //     DepartPath: '广东省深圳市龙岗区'
+  //   }
+  // ]
   await getTodayOutList({ CollegeId: selectTeam.value })
 }
 </script>
@@ -334,6 +338,11 @@ const updata = async () => {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+        ::v-deep {
+          .uni-icons {
+            font-size: 16.1133rpx /* 22px -> 16.1133rpx */ !important;
+          }
         }
       }
     }

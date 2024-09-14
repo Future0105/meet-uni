@@ -1,0 +1,16 @@
+{
+    "id": "cy-audio",
+    "name": "音乐播放软件",
+    "displayName": "音乐播放软件",
+    "version": "1.0",
+    "description": "音频播放组件",
+    "keywords": [
+        "音频"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    }
+}

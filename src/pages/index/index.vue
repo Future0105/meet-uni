@@ -141,6 +141,11 @@ const loginOut = () => {
         //   overflow: hidden;
         //   text-overflow: ellipsis;
         // }
+        ::v-deep {
+          .uni-icons {
+            font-size: 54.9316rpx /* 75px -> 54.9316rpx */ !important;
+          }
+        }
       }
     }
   }

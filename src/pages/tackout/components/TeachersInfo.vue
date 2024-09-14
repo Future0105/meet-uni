@@ -1,6 +1,6 @@
 <template>
   <view class="studentInfo">
-    <ChangeTeacherInfo v-if="showChangeInfo" @confirm="onConfirm" @cancel="onCancel" />
+    <ChangeTeacherInfo :allInfo="allInfo" v-if="showChangeInfo" @confirm="onConfirm" @cancel="onCancel" />
     <view class="header">
       <view class="search-info">
         <view class="student-name inp">
@@ -76,7 +76,7 @@
 
 <script setup>
 import ChangeTeacherInfo from './ChangeTeacherInfo.vue'
-import { getTeachersInfo_API } from '@/api/data'
+import { getTeachersInfo_API, getTeacherAllInfo_API, pushTeacherAllInfo_API } from '@/api/data'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import { userLoginStore } from '@/store/login.js'
@@ -90,10 +90,39 @@ const searchName = ref('')
 //警号搜索
 const searchTeacherId = ref('')
 //下拉框选中队伍(默认为当前登录大队)
-const selectTeam = ref('')
+const selectTeam = ref(0)
 
 const showChangeInfo = ref(false)
 const ChangeTeacherId = ref(null)
+const allInfo = ref({})
+
+//获取民警详细信息
+const getTeacherAllInfo = async (data = {}) => {
+  const teacherAllInfoRes = await getTeacherAllInfo_API(data)
+  if (teacherAllInfoRes.code === 200) {
+    allInfo.value = teacherAllInfoRes.data
+  } else {
+    uni.showToast({
+      title: '获取民警详细信息失败',
+      icon: 'none'
+    })
+  }
+}
+//保存修改
+const pushTeacherAllInfo = async (data = {}) => {
+  const saveTeacherAllInfoRes = await pushTeacherAllInfo_API(data)
+  if (saveTeacherAllInfoRes.code === 200) {
+    uni.showToast({
+      title: '保存成功',
+      icon: 'none'
+    })
+  } else {
+    uni.showToast({
+      title: '保存失败',
+      icon: 'none'
+    })
+  }
+}
 
 //展示数据(0默认全部数据)
 const showData = ref([
@@ -109,7 +138,7 @@ const showData = ref([
 
 const show = ref(showData.value[0].value)
 //一页数据量
-const pageSize = 8
+const pageSize = 9
 // 当前页码
 const pageCurrent = ref(1)
 //数据总数
@@ -142,7 +171,7 @@ const changePage = async page => {
 const getTeachersInfo = async (data = {}) => {
   const teachersInfoRes = await getTeachersInfo_API(data)
   if (teachersInfoRes.code === 200) {
-    total.value = teachersInfoRes.message * pageSize
+    total.value = teachersInfoRes.message
     teachersList.value = teachersInfoRes.data
     // console.log(teachersList.value)
     // console.log(teachersInfoRes)
@@ -175,9 +204,10 @@ onLoad(async () => {
 })
 
 //民警详细信息弹窗
-const changeInfo = Id => {
-  showChangeInfo.value = true //民警信息弹窗
+const changeInfo = async Id => {
   ChangeTeacherId.value = Id // 民警信息Id
+  await getTeacherAllInfo({ UserId: ChangeTeacherId.value })
+  showChangeInfo.value = true //民警信息弹窗
 }
 
 //隐藏民警详细信息弹窗
@@ -186,7 +216,9 @@ const hideChangeInfo = () => {
 }
 // 弹窗确认
 const onConfirm = async value => {
-  console.log('确认')
+  value.UserId = ChangeTeacherId.value
+  console.log('确认', value)
+  await pushTeacherAllInfo(value)
   hideChangeInfo()
 }
 //弹窗取消操作
@@ -195,7 +227,11 @@ const onCancel = () => {
 }
 //改变队伍
 const teamChange = e => {
-  selectTeam.value = e
+  if (e) {
+    selectTeam.value = e // e 为选中的部门id
+  } else {
+    selectTeam.value = 0 // 0 所有部门
+  }
 }
 //改变展示数据条件
 const showDataChange = e => {
@@ -374,6 +410,11 @@ const getFace = debounce(
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+      ::v-deep {
+        .uni-icons {
+          font-size: 16.1133rpx /* 22px -> 16.1133rpx */ !important;
+        }
       }
     }
     .search-info {
@@ -629,12 +670,52 @@ const getFace = debounce(
         }
       }
     }
+    // .uni-pagination-box {
+    //   display: flex;
+    //   align-items: center;
+    //   justify-content: center;
+    //   height: 25.6348rpx /* 35px -> 25.6348rpx */;
+    //   margin-top: 2.1973rpx /* 3px -> 2.1973rpx */;
+    //   display: flex;
+    //   align-items: center;
+    //   justify-content: center;
+    //   ::v-deep {
+    //     .uni-pagination {
+    //       height: 25.6348rpx /* 35px -> 25.6348rpx */;
+    //     }
+    //     //左右按钮
+    //     .uni-pagination__btn {
+    //       width: 20.5078rpx /* 28px -> 20.5078rpx */;
+    //       height: 18.3105rpx /* 25px -> 18.3105rpx */;
+    //       font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+    //       // background-color: #ce0c0c !important;
+    //       .uni-icons {
+    //         font-size: 11.7188rpx /* 16px -> 11.7188rpx */ !important;
+    //       }
+    //     }
+    //     //页数按钮
+    //     .uni-pagination__num-tag {
+    //       display: flex;
+    //       align-items: center;
+    //       justify-content: center;
+    //       font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+    //       width: 20.5078rpx /* 28px -> 20.5078rpx */;
+    //       height: 18.3105rpx /* 25px -> 18.3105rpx */;
+    //     }
+    //     //分页器总数据
+    //     .uni-pagination__total {
+    //       display: none;
+    //       font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+    //       color: #fff;
+    //     }
+    //   }
+    // }
     .uni-pagination-box {
       display: flex;
       align-items: center;
       justify-content: center;
       height: 25.6348rpx /* 35px -> 25.6348rpx */;
-      margin-top: 2.1973rpx /* 3px -> 2.1973rpx */;
+      margin-top: 3.6621rpx /* 5px -> 3.6621rpx */;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -644,12 +725,12 @@ const getFace = debounce(
         }
         //左右按钮
         .uni-pagination__btn {
-          width: 20.5078rpx /* 28px -> 20.5078rpx */;
-          height: 18.3105rpx /* 25px -> 18.3105rpx */;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+          width: 21.9727rpx /* 30px -> 21.9727rpx */;
+          height: 20.5078rpx /* 28px -> 20.5078rpx */;
+          font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
           // background-color: #ce0c0c !important;
           .uni-icons {
-            font-size: 11.7188rpx /* 16px -> 11.7188rpx */ !important;
+            font-size: 13.1836rpx /* 18px -> 13.1836rpx */ !important;
           }
         }
         //页数按钮
@@ -657,14 +738,14 @@ const getFace = debounce(
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-          width: 20.5078rpx /* 28px -> 20.5078rpx */;
-          height: 18.3105rpx /* 25px -> 18.3105rpx */;
+          font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+          width: 21.9727rpx /* 30px -> 21.9727rpx */;
+          height: 20.5078rpx /* 28px -> 20.5078rpx */;
         }
         //分页器总数据
         .uni-pagination__total {
           display: none;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+          font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
           color: #fff;
         }
       }

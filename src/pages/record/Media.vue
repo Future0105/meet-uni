@@ -1,15 +1,13 @@
 <template>
   <view class="notOut">
     <view class="modal" @click.stop>
-      <view class="modal-header">录像回放</view>
+      <view class="modal-header">录音回放</view>
       <view class="modal-content">
-        <video
-          class="viedo"
-          @error="videoErrorCallback"
-          :src="viedoSrc"
-          :page-gesture="true"
-          :show-fullscreen-btn="false"
-        ></video>
+        <Media class="media" :music="mediaSrc"></Media>
+        <!-- autoplay : boolean,
+	music : string,
+	image : string,
+	title : number | string, -->
       </view>
       <view class="modal-footer">
         <button class="btn" @click="handleCancel">关闭</button>
@@ -20,11 +18,20 @@
 
 <script setup>
 // import { getReasonsList_API } from '@/api/data.js'
+import Media from '@/components/cy-audio_1.0/components/cy-audio/cy-audio.vue'
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-const viedoSrc = ref(
-  'https://cn-sh-ct-01-10.bilivideo.com/upgcxcode/58/39/1597793958/1597793958-1-192.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1725698868&gen=playurlv2&os=bcache&oi=241938686&trid=0000ecc9e63b38614b359e9f4adbb1db1dd4T&mid=294837898&platform=html5&og=hw&upsig=aaf609315633859bef91276e22e0a98c&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform,og&cdnid=88210&bvc=vod&nettype=0&bw=96829&orderid=0,1&buvid=&build=0&mobi_app=&f=T_0_0&logo=80000000'
-)
+
+// 使用 defineProps 正确地获取父组件传递的 props
+const props = defineProps({
+  mediaUrl: {
+    type: String,
+    default: ''
+  }
+})
+
+const mediaSrc = ref(null)
+// const mediaImg = ref('@/static/image/logo/small.png')
 //返回确认和取消操作给父级
 const emits = defineEmits(['cancel'])
 //获取不带出理由列表
@@ -42,20 +49,13 @@ const emits = defineEmits(['cancel'])
 
 //组件加载
 onLoad(async () => {
+  // mediaSrc.value = props.mediaUrl
   //获取不带出理由列表
   // await getReasonsList()
 })
 // 关闭按钮
 const handleCancel = () => {
   emits('cancel')
-}
-
-const videoErrorCallback = e => {
-  uni.showModal({
-    // content: e.target.errMsg,
-    content: '播放失败',
-    showCancel: false
-  })
 }
 </script>
 
@@ -80,12 +80,11 @@ const videoErrorCallback = e => {
     border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
     overflow: auto;
     .modal-header {
-      height: 32.959rpx /* 45px -> 32.959rpx */;
-      line-height: 32.959rpx /* 45px -> 32.959rpx */;
+      height: 36.6211rpx /* 50px -> 36.6211rpx */;
+      line-height: 36.6211rpx /* 50px -> 36.6211rpx */;
       // padding: 7.3242rpx /* 10px -> 7.3242rpx */;
-      font-size: 14.6484rpx /* 20px -> 14.6484rpx */;
+      font-size: 21.9727rpx /* 30px -> 21.9727rpx */;
       color: #000000;
-      font-weight: 500;
       background-color: #f2f2f2;
       text-align: center;
     }
@@ -97,11 +96,6 @@ const videoErrorCallback = e => {
       overflow-y: auto;
       // background-color: #007aff;
       // padding: 6%;
-      .viedo {
-        width: 585.9375rpx /* 800px -> 585.9375rpx */;
-        height: 329.5898rpx /* 450px -> 329.5898rpx */;
-        // height: 500px;
-      }
     }
     .modal-footer {
       background-color: #f2f2f2;

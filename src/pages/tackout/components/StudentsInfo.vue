@@ -1,6 +1,6 @@
 <template>
   <view class="studentInfo">
-    <ChangeStudentInfo v-if="showChangeInfo" @confirm="onConfirm" @cancel="onCancel" />
+    <ChangeStudentInfo :allInfo="allInfo" v-if="showChangeInfo" @confirm="onConfirm" @cancel="onCancel" />
     <view class="header">
       <view class="search-info">
         <view class="student-name inp">
@@ -63,9 +63,6 @@
             <uni-td align="center" :class="{ face: item.IsFace === 1 }">{{ item.RealName }}</uni-td>
             <uni-td align="center">
               {{ item.IDCardNo }}
-              <!-- <text style="padding: 0 3.6621rpx" v-for="(family, index) in item.familyName" :key="index">
-                {{ family }}
-              </text> -->
             </uni-td>
             <uni-td align="center">{{ item.Sex }}</uni-td>
             <uni-td align="center">{{ item.DepartPath }}</uni-td>
@@ -96,7 +93,7 @@
 
 <script setup>
 import ChangeStudentInfo from './ChangeStudentInfo.vue'
-import { getStudentsInfo_API } from '@/api/data'
+import { getStudentsInfo_API, getStudentAllInfo_API, pushStudentAllInfo_API } from '@/api/data'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 import { userLoginStore } from '@/store/login.js'
@@ -111,7 +108,7 @@ const searchAddress = ref('')
 //所有队伍列表
 const teamsList = ref([])
 //下拉框选中队伍(默认为当前登录大队)
-const selectTeam = ref('')
+const selectTeam = ref(0)
 //展示数据(0默认全部数据)
 const showData = ref([
   {
@@ -127,10 +124,41 @@ const show = ref(showData.value[0].value)
 
 const showChangeInfo = ref(false)
 const ChangeStudentId = ref(null)
+
+const allInfo = ref({})
+//获取学员详细信息
+const getStudentAllInfo = async (data = {}) => {
+  const studentAllInfoRes = await getStudentAllInfo_API(data)
+  if (studentAllInfoRes.code === 200) {
+    allInfo.value = studentAllInfoRes.data
+  } else {
+    uni.showToast({
+      title: '获取学员详细信息失败',
+      icon: 'none'
+    })
+  }
+}
+//保存修改
+const pushStudentAllInfo = async (data = {}) => {
+  const saveStudentAllInfoRes = await pushStudentAllInfo_API(data)
+  if (saveStudentAllInfoRes.code === 200) {
+    uni.showToast({
+      title: '保存成功',
+      icon: 'none'
+    })
+  } else {
+    uni.showToast({
+      title: '保存失败',
+      icon: 'none'
+    })
+  }
+}
+
 //学员详细信息弹窗
-const changeInfo = Id => {
-  showChangeInfo.value = true //学员信息弹窗
+const changeInfo = async Id => {
   ChangeStudentId.value = Id // 学员信息Id
+  await getStudentAllInfo({ UserId: ChangeStudentId.value })
+  showChangeInfo.value = true //学员信息弹窗
 }
 //隐藏学员详细信息弹窗
 const hideChangeInfo = () => {
@@ -138,7 +166,9 @@ const hideChangeInfo = () => {
 }
 // 弹窗确认
 const onConfirm = async value => {
-  console.log('确认')
+  value.UserId = ChangeStudentId.value
+  console.log('确认', value)
+  await pushStudentAllInfo(value)
   hideChangeInfo()
 }
 //弹窗取消操作
@@ -178,8 +208,7 @@ const changePage = async page => {
 const getStudentsInfo = async (data = {}) => {
   const studentsInfoRes = await getStudentsInfo_API(data)
   if (studentsInfoRes.code === 200) {
-    // total.value = studentsInfoRes.message
-    total.value = studentsInfoRes.message * pageSize
+    total.value = studentsInfoRes.message
     studentsList.value = studentsInfoRes.data
   } else {
     uni.showToast({
@@ -208,7 +237,11 @@ onLoad(async () => {
 })
 //改变队伍
 const teamChange = e => {
-  selectTeam.value = e
+  if (e) {
+    selectTeam.value = e // e 为选中的部门id
+  } else {
+    selectTeam.value = 0 // 0 所有部门
+  }
 }
 //改变展示数据条件
 const showDataChange = e => {
@@ -217,132 +250,132 @@ const showDataChange = e => {
 
 const updata = async () => {
   // console.log('SearchType:', show.value)
-  teamsList.value = [
-    { value: 1, text: '教育矫治所' },
-    { value: 2, text: '一大队' },
-    { value: 3, text: '二大队' },
-    { value: 4, text: '三大队' },
-    { value: 5, text: '安保大队' }
-  ]
-  studentsList.value = [
-    {
-      RealName: '张三啊',
-      IDCardNo: 435222200001016000,
-      Sex: '男',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
-      CollegeName: '北碚区教育矫治所',
-      AttentLevelName: '一级',
-      CadetStateName: '生病',
-      InTeamStateName: '李涛监狱',
-      FrozenDateTime: '2000-00-00 00:00:00',
-      RoundTime: '3000-00-00 00:00:00',
-      IsFace: 1
-    },
-    {
-      RealName: '张四',
-      IDCardNo: 4351,
-      Sex: '女',
-      DepartPath: '重庆市北碚大区北碚大镇北碚大街道00号00号',
-      CollegeName: '李涛',
-      AttentLevelName: '一级',
-      CadetStateName: '男',
-      InTeamStateName: '李涛',
-      FrozenDateTime: '李涛重名标识',
-      RoundTime: '男',
-      IsFace: 1
-    },
-    {
-      RealName: '张五',
-      IDCardNo: 4352,
-      Sex: '男',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
-      CollegeName: '李涛',
-      AttentLevelName: '一级',
-      CadetStateName: '男',
-      InTeamStateName: '李涛',
-      FrozenDateTime: '李涛重名标识',
-      RoundTime: '男',
-      IsFace: 1
-    },
-    {
-      RealName: '张三',
-      IDCardNo: 4350,
-      Sex: '男',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
-      CollegeName: '李涛',
-      AttentLevelName: '一级',
-      CadetStateName: '男',
-      InTeamStateName: '李涛',
-      FrozenDateTime: '李涛重名标识',
-      RoundTime: '男',
-      IsFace: 1
-    },
-    {
-      RealName: '张四',
-      IDCardNo: 4351,
-      Sex: '男',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
-      CollegeName: '李涛',
-      AttentLevelName: '一级',
-      CadetStateName: '男',
-      InTeamStateName: '李涛',
-      FrozenDateTime: '李涛重名标识',
-      RoundTime: '男',
-      IsFace: 1
-    },
-    {
-      RealName: '张五',
-      IDCardNo: 4352,
-      Sex: '男',
-      DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
-      CollegeName: '李涛',
-      AttentLevelName: '一级',
-      CadetStateName: '男',
-      InTeamStateName: '李涛',
-      FrozenDateTime: '李涛重名标识',
-      RoundTime: '男',
-      IsFace: 1
-    },
-    {
-      RealName: '张三',
-      IDCardNo: 4350,
-      Sex: '男',
-      DepartPath: '13618206431',
-      CollegeName: '李涛',
-      AttentLevelName: '一级',
-      CadetStateName: '男',
-      InTeamStateName: '李涛',
-      FrozenDateTime: '李涛重名标识',
-      RoundTime: '男',
-      IsFace: 1
-    },
-    {
-      RealName: '张四',
-      IDCardNo: 4351,
-      Sex: '男',
-      DepartPath: '13618206431',
-      CollegeName: '李涛',
-      AttentLevelName: '一级',
-      CadetStateName: '男',
-      InTeamStateName: '李涛',
-      FrozenDateTime: '李涛重名标识',
-      RoundTime: '男',
-      IsFace: 1
-    },
-    {
-      RealName: '张五',
-      IDCardNo: 4352,
-      Sex: '男',
-      DepartPath: '13618206431',
-      CollegeName: '李涛',
-      AttentLevelName: '一级',
-      CadetStateName: '男',
-      InTeamStateName: '李涛',
-      FrozenDateTime: '李涛重名标识',
-      RoundTime: '男',
-      IsFace: 1
-    }
-  ]
+  // teamsList.value = [
+  //   { value: 1, text: '教育矫治所' },
+  //   { value: 2, text: '一大队' },
+  //   { value: 3, text: '二大队' },
+  //   { value: 4, text: '三大队' },
+  //   { value: 5, text: '安保大队' }
+  // ]
+  // studentsList.value = [
+  //   {
+  //     RealName: '张三啊',
+  //     IDCardNo: 435222200001016000,
+  //     Sex: '男',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
+  //     CollegeName: '北碚区教育矫治所',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '生病',
+  //     InTeamStateName: '李涛监狱',
+  //     FrozenDateTime: '2000-00-00 00:00:00',
+  //     RoundTime: '3000-00-00 00:00:00',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     RealName: '张四',
+  //     IDCardNo: 4351,
+  //     Sex: '女',
+  //     DepartPath: '重庆市北碚大区北碚大镇北碚大街道00号00号',
+  //     CollegeName: '李涛',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '男',
+  //     InTeamStateName: '李涛',
+  //     FrozenDateTime: '李涛重名标识',
+  //     RoundTime: '男',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     RealName: '张五',
+  //     IDCardNo: 4352,
+  //     Sex: '男',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
+  //     CollegeName: '李涛',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '男',
+  //     InTeamStateName: '李涛',
+  //     FrozenDateTime: '李涛重名标识',
+  //     RoundTime: '男',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     RealName: '张三',
+  //     IDCardNo: 4350,
+  //     Sex: '男',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
+  //     CollegeName: '李涛',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '男',
+  //     InTeamStateName: '李涛',
+  //     FrozenDateTime: '李涛重名标识',
+  //     RoundTime: '男',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     RealName: '张四',
+  //     IDCardNo: 4351,
+  //     Sex: '男',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
+  //     CollegeName: '李涛',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '男',
+  //     InTeamStateName: '李涛',
+  //     FrozenDateTime: '李涛重名标识',
+  //     RoundTime: '男',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     RealName: '张五',
+  //     IDCardNo: 4352,
+  //     Sex: '男',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
+  //     CollegeName: '李涛',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '男',
+  //     InTeamStateName: '李涛',
+  //     FrozenDateTime: '李涛重名标识',
+  //     RoundTime: '男',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     RealName: '张三',
+  //     IDCardNo: 4350,
+  //     Sex: '男',
+  //     DepartPath: '广东省深圳市龙岗区广东省深圳市龙岗区广东',
+  //     CollegeName: '李涛',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '男',
+  //     InTeamStateName: '李涛',
+  //     FrozenDateTime: '李涛重名标识',
+  //     RoundTime: '男',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     RealName: '张四',
+  //     IDCardNo: 4351,
+  //     Sex: '男',
+  //     DepartPath: '13618206431',
+  //     CollegeName: '李涛',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '男',
+  //     InTeamStateName: '李涛',
+  //     FrozenDateTime: '李涛重名标识',
+  //     RoundTime: '男',
+  //     IsFace: 1
+  //   },
+  //   {
+  //     RealName: '张五',
+  //     IDCardNo: 4352,
+  //     Sex: '男',
+  //     DepartPath: '13618206431',
+  //     CollegeName: '李涛',
+  //     AttentLevelName: '一级',
+  //     CadetStateName: '男',
+  //     InTeamStateName: '李涛',
+  //     FrozenDateTime: '李涛重名标识',
+  //     RoundTime: '男',
+  //     IsFace: 1
+  //   }
+  // ]
   pageCurrent.value = 1
   await getStudentsInfo({
     RealName: searchName.value,
@@ -422,6 +455,11 @@ const getFace = debounce(
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+      ::v-deep {
+        .uni-icons {
+          font-size: 16.1133rpx /* 22px -> 16.1133rpx */ !important;
+        }
       }
     }
     .search-info {
@@ -680,7 +718,7 @@ const getFace = debounce(
       align-items: center;
       justify-content: center;
       height: 25.6348rpx /* 35px -> 25.6348rpx */;
-      margin-top: 2.1973rpx /* 3px -> 2.1973rpx */;
+      margin-top: 3.6621rpx /* 5px -> 3.6621rpx */;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -690,12 +728,12 @@ const getFace = debounce(
         }
         //左右按钮
         .uni-pagination__btn {
-          width: 20.5078rpx /* 28px -> 20.5078rpx */;
-          height: 18.3105rpx /* 25px -> 18.3105rpx */;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+          width: 21.9727rpx /* 30px -> 21.9727rpx */;
+          height: 20.5078rpx /* 28px -> 20.5078rpx */;
+          font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
           // background-color: #ce0c0c !important;
           .uni-icons {
-            font-size: 11.7188rpx /* 16px -> 11.7188rpx */ !important;
+            font-size: 13.1836rpx /* 18px -> 13.1836rpx */ !important;
           }
         }
         //页数按钮
@@ -703,14 +741,14 @@ const getFace = debounce(
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-          width: 20.5078rpx /* 28px -> 20.5078rpx */;
-          height: 18.3105rpx /* 25px -> 18.3105rpx */;
+          font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+          width: 21.9727rpx /* 30px -> 21.9727rpx */;
+          height: 20.5078rpx /* 28px -> 20.5078rpx */;
         }
         //分页器总数据
         .uni-pagination__total {
           display: none;
-          font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+          font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
           color: #fff;
         }
       }

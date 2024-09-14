@@ -34,12 +34,12 @@
           <text>{{ showBtn ? '确认选择' : '选择民警' }}</text>
         </button>
         <view v-show="showBtn" class="teacher-list">
-          <checkbox-group class="checkbox-group" v-if="teachersList.length > 0" @change="selectTeachersList">
+          <checkbox-group class="checkbox-group" v-if="teachersList" @change="selectTeachersList">
             <label class="checkbox" v-for="item in teachersList" :key="item.Id">
               <view>
-                <checkbox :value="item" :checked="item.Id === selectedTeacherId" />
+                <checkbox :value="JSON.stringify(item)" :checked="item.Id === selectedTeacherId" />
               </view>
-              <view> {{ item.Name }}</view>
+              <view> {{ item.Name }}{{ item.RemarkName ? `(${item.RemarkName})` : '' }}</view>
             </label>
           </checkbox-group>
           <view v-else class="checkbox-group-none">暂无数据</view>
@@ -101,7 +101,14 @@
 
 <script setup>
 import NotOut from './NotOut.vue'
-import { getStudentsList_API, getTeachersList_API, pushNotOut_API, pushWaitOut_API, pushTackOut_API } from '@/api/data'
+import {
+  getStudentsList_API,
+  upDataStudentsList_API,
+  getTeachersList_API,
+  pushNotOut_API,
+  pushWaitOut_API,
+  pushTackOut_API
+} from '@/api/data'
 import { userLoginStore } from '@/store/login.js'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref, nextTick, onUnmounted } from 'vue'
@@ -109,7 +116,7 @@ const loginStore = userLoginStore()
 //所有队伍列表
 const teamsList = ref([])
 //下拉框选中队伍(默认为当前登录大队)
-const selectTeam = ref(null)
+const selectTeam = ref(0)
 
 //民警列表数据
 const teachersList = ref([])
@@ -123,6 +130,7 @@ const selectedTeachersLength = ref(0)
 
 //当前队伍学员信息
 const studentsList = ref([])
+const upDataStudents = ref([])
 // 选择的学员列表   选中学员数量
 const selectedStudents = ref([])
 const selectedStudentsLength = ref(0)
@@ -139,7 +147,9 @@ const studentTable = ref(null)
 const getStudentsList = async (data = {}) => {
   const studentsListRes = await getStudentsList_API(data)
   if (studentsListRes.code === 200) {
-    studentsList.value = studentsListRes.data
+    if (studentsListRes.data) {
+      studentsList.value = studentsListRes.data
+    }
     // console.log(studentsList.value)
   } else {
     uni.showToast({
@@ -148,18 +158,39 @@ const getStudentsList = async (data = {}) => {
     })
   }
 }
+
+//获取推送更新学员数据
+const upDataStudentsList = async (data = {}) => {
+  const upDataStudentsListRes = await upDataStudentsList_API(data)
+  if (upDataStudentsListRes.code === 200) {
+    if (upDataStudentsListRes.data) {
+      upDataStudents.value = upDataStudentsListRes.data
+    }
+  } else {
+    uni.showToast({
+      title: '推送更新学员列表失败',
+      icon: 'none'
+    })
+  }
+}
+const upDataStudentsAdd = async () => {
+  await upDataStudentsList()
+  studentsList.value.push(...upDataStudents.value)
+}
 //获取教员列表
 const getTeachersList = async (data = {}) => {
   const teachersListRes = await getTeachersList_API(data)
   if (teachersListRes.code === 200) {
     teachersList.value = teachersListRes.data
-    if (teachersList.value.find(item => item.Id === loginStore.loginInfo.Id)) {
-      //用于列表渲染时匹配默认选中
-      selectedTeacherId.value = teachersList.value.find(item => item.Id === loginStore.loginInfo.Id).Id
-      //选中民警姓名
-      selectedTeachers.value = teachersList.value.find(item => item.Id === loginStore.loginInfo.Id).Name
-      //选中民警数量
-      selectedTeachersLength.value = 1
+    if (teachersList.value) {
+      if (teachersList.value.find(item => item.Id === loginStore.loginInfo.Id)) {
+        //用于列表渲染时匹配默认选中
+        selectedTeacherId.value = teachersList.value.find(item => item.Id === loginStore.loginInfo.Id).Id
+        //选中民警姓名
+        selectedTeachers.value = teachersList.value.find(item => item.Id === loginStore.loginInfo.Id).Name
+        //选中民警数量
+        selectedTeachersLength.value = 1
+      }
     }
   } else {
     uni.showToast({
@@ -170,233 +201,214 @@ const getTeachersList = async (data = {}) => {
   // console.log(teachersList.value);
 }
 
-const upDataStudents = () => {
-  console.log('定时器开启,获取待出数据updata')
-  // const newArray = [
-  //   {
-  //     Id: 1001,
-  //     CadetName: '大毛',
-  //     KinName: '大毛父亲',
-  //     CollegeName: 'CollegeName',
-  //     DepartPath: 'DepartPath'
-  //   },
-  //   {
-  //     Id: 1001,
-  //     CadetName: '选择民警选择民警选择民警选择民警',
-  //     KinName: '选择民警选择民警选择民警选择民警',
-  //     CollegeName: '选择民警选择民警选择民警选择民警选择民警选择民警选择民警',
-  //     DepartPath: '大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲'
-  //   }
-  // ]
-  const newArray = []
-  studentsList.value.push(...newArray)
-  // await getTeachersList({ CollegeId: selectTeam.value })
-}
 let timer = null
 onLoad(async () => {
-  // timer = setInterval(upDataStudents, 2000)
   // 部门列表
   teamsList.value = loginStore.teamsList
   //根据登录信息,匹配默认选中部门
   if (teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId)) {
     selectTeam.value = teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId).value
   }
-  //默认登录部门下的学员 信息
+  //所有学员
   await getStudentsList()
   //教员信息
   await getTeachersList({ CollegeId: selectTeam.value })
   // // 设置定时器，每隔60秒请求一次数据
-  // timer = setInterval(upDataStudents, 60000)
+  timer = setInterval(upDataStudentsAdd, 30000)
 })
 //下拉框更改部门
 const teamListChange = async e => {
-  selectTeam.value = e // e 为选中的部门id
+  if (e) {
+    selectTeam.value = e // e 为选中的部门id
+  } else {
+    selectTeam.value = 0 // 0 所有部门
+  }
 }
 //查询和刷新,学员数据
 const updata = async () => {
-  teamsList.value = [
-    { value: 1, text: '教育矫治所' },
-    { value: 2, text: '一大队' },
-    { value: 3, text: '二大队' },
-    { value: 4, text: '三大队' },
-    { value: 5, text: '安保大队' }
-  ]
-  studentsList.value = [
-    {
-      Id: 1001,
-      CadetName: '张三',
-      KinName: '张父亲,张母亲',
-      CollegeName: '教育矫治所',
-      DepartPath: '重庆市重庆区重庆街道'
-    },
-    {
-      Id: 1002,
-      CadetName: '李四',
-      KinName: '李四姐,李四兄',
-      CollegeName: '一大队',
-      DepartPath: '重庆市重庆区重庆街道教育矫治所'
-    },
-    {
-      Id: 1002,
-      CadetName: '王五',
-      KinName: '王五弟',
-      CollegeName: '二大队',
-      DepartPath: '重庆市重庆区重庆街道教育矫治所'
-    },
-    {
-      Id: 1004,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '重庆市重庆区教育矫治所',
-      DepartPath: '重庆市重庆区重庆街道教育矫治所'
-    },
-    {
-      Id: 1001,
-      CadetName: '二毛',
-      KinName: '二毛父亲',
-      CollegeName: '三大队',
-      DepartPath: '重庆市重庆区重庆街道教育矫治所教育矫治教育矫治教育矫治教育矫治'
-    },
-    {
-      Id: 1001,
-      CadetName: '三毛',
-      KinName: '三毛父亲',
-      CollegeName: '三大队',
-      DepartPath: '重庆市重庆区'
-    },
-    {
-      Id: 1001,
-      CadetName: '四毛',
-      KinName: '四毛父亲',
-      CollegeName: '三大队',
-      DepartPath: '重庆市重庆区'
-    },
-    {
-      Id: 1001,
-      CadetName: '五毛',
-      KinName: '五毛父亲',
-      CollegeName: '三大队',
-      DepartPath: '重庆市重庆区'
-    },
-    {
-      Id: 1001,
-      CadetName: '六毛',
-      KinName: '六毛父亲',
-      CollegeName: '三大队',
-      DepartPath: '重庆市重庆区'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: '重庆市重庆区'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '选择民警选择民警选择民警选择民警',
-      KinName: '选择民警选择民警选择民警选择民警',
-      CollegeName: '三大队',
-      DepartPath: '大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    },
-    {
-      Id: 1001,
-      CadetName: '大毛',
-      KinName: '大毛父亲',
-      CollegeName: '三大队',
-      DepartPath: 'DepartPath'
-    }
-  ]
-  teachersList.value = [
-    { Id: 4356, Name: '张警官' },
-    { Id: 4355, Name: '王警官' },
-    { Id: 4350, Name: '李警告' },
-    { Id: 4356, Name: '李莉' },
-    { Id: 4355, Name: '欧阳昊天' },
-    { Id: 4350, Name: '李涛' },
-    { Id: 4355, Name: '罗凯' },
-    { Id: 4350, Name: '李涛' },
-    { Id: 4356, Name: '李莉' },
-    { Id: 4355, Name: '罗凯' },
-    { Id: 4350, Name: '李涛' }
-  ]
+  // teamsList.value = [
+  //   { value: 1, text: '教育矫治所' },
+  //   { value: 2, text: '一大队' },
+  //   { value: 3, text: '二大队' },
+  //   { value: 4, text: '三大队' },
+  //   { value: 5, text: '安保大队' }
+  // ]
+  // studentsList.value = [
+  //   {
+  //     Id: 1001,
+  //     CadetName: '张三',
+  //     KinName: '张父亲,张母亲',
+  //     CollegeName: '教育矫治所',
+  //     DepartPath: '重庆市重庆区重庆街道'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '李四',
+  //     KinName: '李四姐,李四兄',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市重庆区重庆街道教育矫治所'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '王五',
+  //     KinName: '王五弟',
+  //     CollegeName: '二大队',
+  //     DepartPath: '重庆市重庆区重庆街道教育矫治所'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '重庆市重庆区教育矫治所',
+  //     DepartPath: '重庆市重庆区重庆街道教育矫治所'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '二毛',
+  //     KinName: '二毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区重庆街道教育矫治所教育矫治教育矫治教育矫治教育矫治'
+  //   },
+  //   {
+  //     Id: 1006,
+  //     CadetName: '三毛',
+  //     KinName: '三毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1007,
+  //     CadetName: '四毛',
+  //     KinName: '四毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1008,
+  //     CadetName: '五毛',
+  //     KinName: '五毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1009,
+  //     CadetName: '六毛',
+  //     KinName: '六毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1010,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1011,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1012,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1013,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1014,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1015,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1016,
+  //     CadetName: '选择民警选择民警选择民警选择民警',
+  //     KinName: '选择民警选择民警选择民警选择民警',
+  //     CollegeName: '三大队',
+  //     DepartPath: '大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲'
+  //   },
+  //   {
+  //     Id: 1017,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1018,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1019,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1020,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1021,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1022,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1023,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   }
+  // ]
+  // teachersList.value = [
+  //   { Id: 4350, Name: '张警官' },
+  //   { Id: 4351, Name: '王警官' },
+  //   { Id: 4352, Name: '李警告' },
+  //   { Id: 4353, Name: '李莉' },
+  //   { Id: 4354, Name: '欧阳昊天' },
+  //   { Id: 4355, Name: '李涛' },
+  //   { Id: 4356, Name: '罗凯' },
+  //   { Id: 4357, Name: '李涛' },
+  //   { Id: 4358, Name: '李莉' },
+  //   { Id: 4359, Name: '罗凯' },
+  //   { Id: 4360, Name: '李涛' }
+  // ]
   selectedTeachersLength.value = 0
   tackoutTeachersIds.value = []
   selectedTeachers.value = '请选择民警'
@@ -408,6 +420,169 @@ const updata = async () => {
   await getStudentsList()
   //民警列表
   await getTeachersList({ CollegeId: selectTeam.value })
+  // studentsList.value = [
+  //   {
+  //     Id: 1001,
+  //     CadetName: '张三',
+  //     KinName: '张父亲,张母亲',
+  //     CollegeName: '教育矫治所',
+  //     DepartPath: '重庆市重庆区重庆街道'
+  //   },
+  //   {
+  //     Id: 1002,
+  //     CadetName: '李四',
+  //     KinName: '李四姐,李四兄',
+  //     CollegeName: '一大队',
+  //     DepartPath: '重庆市重庆区重庆街道教育矫治所'
+  //   },
+  //   {
+  //     Id: 1003,
+  //     CadetName: '王五',
+  //     KinName: '王五弟',
+  //     CollegeName: '二大队',
+  //     DepartPath: '重庆市重庆区重庆街道教育矫治所'
+  //   },
+  //   {
+  //     Id: 1004,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '重庆市重庆区教育矫治所',
+  //     DepartPath: '重庆市重庆区重庆街道教育矫治所'
+  //   },
+  //   {
+  //     Id: 1005,
+  //     CadetName: '二毛',
+  //     KinName: '二毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区重庆街道教育矫治所教育矫治教育矫治教育矫治教育矫治'
+  //   },
+  //   {
+  //     Id: 1006,
+  //     CadetName: '三毛',
+  //     KinName: '三毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1007,
+  //     CadetName: '四毛',
+  //     KinName: '四毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1008,
+  //     CadetName: '五毛',
+  //     KinName: '五毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1009,
+  //     CadetName: '六毛',
+  //     KinName: '六毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1010,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: '重庆市重庆区'
+  //   },
+  //   {
+  //     Id: 1011,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1012,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1013,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1014,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1015,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1016,
+  //     CadetName: '选择民警选择民警选择民警选择民警',
+  //     KinName: '选择民警选择民警选择民警选择民警',
+  //     CollegeName: '三大队',
+  //     DepartPath: '大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲大毛父亲'
+  //   },
+  //   {
+  //     Id: 1017,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1018,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1019,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1020,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1021,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1022,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   },
+  //   {
+  //     Id: 1023,
+  //     CadetName: '大毛',
+  //     KinName: '大毛父亲',
+  //     CollegeName: '三大队',
+  //     DepartPath: 'DepartPath'
+  //   }
+  // ]
 }
 //选择教员列表按钮
 const showSelectTeacher = () => {
@@ -510,19 +685,21 @@ const takeOutSelectedStudents = async () => {
 }
 // 选择民警 监听民警选择变化 并更新 selectedTeachers
 const selectTeachersList = selections => {
-  selectedTeachersLength.value = selections.detail.value.length // 选中民警数量
+  const selectTeacher = selections.detail.value.map(item => JSON.parse(item))
+  selectedTeachersLength.value = selectTeacher.length // 选中民警数量
   if (selectedTeachersLength.value > 0) {
     // 从传递的对象中获取 Id 和 Name
-    tackoutTeachersIds.value = selections.detail.value.map(teacher => teacher.Id)
-    selectedTeachers.value = selections.detail.value
-      .map(teacher => teacher.Name) // 获取已选中的民警名字
+    tackoutTeachersIds.value = selectTeacher.map(teacher => teacher.Id)
+    selectedTeachers.value = selectTeacher
+      .map(teacher => {
+        return teacher.Name + (teacher.RemarkName ? `(${teacher.RemarkName})` : '')
+      }) // 获取已选中的民警名字
       .join(',')
   } else {
     tackoutTeachersIds.value = []
     selectedTeachers.value = '请选择民警'
   }
 }
-
 //选择学员 监听学员选择变化 并更新 selectedStudents
 const selectStudentsList = selections => {
   selectedStudentsLength.value = selections.detail.index.length // 选中学员数量
@@ -565,13 +742,13 @@ const hideReason = () => {
 }
 // 弹窗确认不带出
 const onConfirm = async value => {
-  hideReason()
   //value 为不带出理由id
   await pushNotOut_API({
     Id: notStudentId.value,
     NoBringOutReasonId: value
   })
   await getStudentsList()
+  hideReason()
 }
 //弹窗取消操作
 const onCancel = () => {
@@ -582,7 +759,7 @@ const clearTimer = () => {
   if (timer) {
     clearInterval(timer)
     timer = null
-    console.log('1分钟更新推送学员列表,定时器已清除')
+    // console.log('1分钟更新推送学员列表,定时器已清除')
   }
 }
 // 在组件卸载（销毁）时执行 redirectTo卸载,navigateTo保留
@@ -704,6 +881,11 @@ onUnmounted(() => {
           overflow: hidden;
           text-overflow: ellipsis;
         }
+        ::v-deep {
+          .uni-icons {
+            font-size: 16.1133rpx /* 22px -> 16.1133rpx */ !important;
+          }
+        }
       }
     }
     .teachers-select {
@@ -758,6 +940,11 @@ onUnmounted(() => {
           overflow: hidden;
           text-overflow: ellipsis;
         }
+        ::v-deep {
+          .uni-icons {
+            font-size: 16.1133rpx /* 22px -> 16.1133rpx */ !important;
+          }
+        }
       }
       .teacher-list {
         position: absolute;
@@ -784,19 +971,19 @@ onUnmounted(() => {
           .checkbox {
             display: flex;
             font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
-            font-weight: 40073;
-            width: 69.5801rpx /* 95px -> 69.5801rpx */;
+            font-weight: 400;
+            width: 73.2422rpx /* 100px -> 73.2422rpx */;
             height: 20.5078rpx /* 28px -> 20.5078rpx */;
             line-height: 20.5078rpx /* 28px -> 20.5078rpx */;
-            padding: 0 3.6621rpx /* 5px -> 3.6621rpx */;
-            margin: 3.6621rpx /* 5px -> 3.6621rpx */ 0;
+            padding: 0 2.9297rpx /* 4px -> 2.9297rpx */;
+            margin: 2.1973rpx /* 3px -> 2.1973rpx */ 0;
             background-color: #e9e9e9;
             border-radius: 5px;
           }
         }
         ::v-deep {
           .uni-label-pointer {
-            font-size: 11.7188rpx /* 16px -> 11.7188rpx */;
+            font-size: 8.7891rpx /* 12px -> 8.7891rpx */ !important;
             :nth-child(2) {
               white-space: nowrap;
               overflow: hidden;
@@ -806,7 +993,7 @@ onUnmounted(() => {
           .uni-checkbox-input {
             width: 11.7188rpx /* 16px -> 11.7188rpx */;
             height: 11.7188rpx /* 16px -> 11.7188rpx */;
-            margin: 0 5.8594rpx /* 8px -> 5.8594rpx */ 0 0;
+            margin: 0 2.9297rpx /* 4px -> 2.9297rpx */ 0 0;
             // background-color: #ff5722;
             svg {
               width: 35px;
@@ -841,6 +1028,11 @@ onUnmounted(() => {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+      ::v-deep {
+        .uni-icons {
+          font-size: 16.1133rpx /* 22px -> 16.1133rpx */ !important;
+        }
       }
     }
   }

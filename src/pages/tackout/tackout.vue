@@ -105,6 +105,11 @@ onLoad(async e => {
         width: 10%;
         font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
         gap: 3.6621rpx /* 5px -> 3.6621rpx */; /* 图标和文本之间的间距 */
+        ::v-deep {
+          .uni-icons {
+            font-size: 21.9727rpx /* 30px -> 21.9727rpx */ !important;
+          }
+        }
       }
     }
     .page {

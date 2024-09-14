@@ -3,14 +3,13 @@ import { ref } from "vue"
 import { redirectTo } from '@/utils/to.js'
 import { login_API, getTeamsList_API } from '@/api/data' //getTeachersList_API
 export const userLoginStore = defineStore("login", () => {
-  const loginInfo = ref({}) //登录信息 {Id: 177, RealName: '超级管理员', CollegeId: 2, CollegeName: '重庆市女子监狱'}
+  const loginInfo = ref({}) //登录信息 {Id: 177, RealName: '未知', CollegeId: 2, CollegeName: '重庆市女子监狱'}
   const teamsList = ref([]) //部门列表
   //登录
   const login = async ({ UserName, Password }) => {
     const loginInfoRes = await login_API({ UserName, Password })
     if (loginInfoRes.code === 200) {
       loginInfo.value = loginInfoRes.data
-      // console.log(loginInfo.value)
       redirectTo('/pages/tackout/tackout')
     } else if (loginInfoRes.code === 400) {
       uni.showToast({

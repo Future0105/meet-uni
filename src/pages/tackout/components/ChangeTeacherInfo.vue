@@ -53,17 +53,18 @@
                 v-model="selectTeam"
                 :localdata="teamsList"
                 @change="changeTeam"
+                :disabled="true"
               ></uni-data-select>
             </view>
           </view>
         </view>
         <view class="modal-content-img">
           <view class="zj-img img">
-            <image src="@/static/image/logo/small.png" mode="scaleToFill" />
+            <image :src="IdImg" mode="scaleToFill" />
             <text>证件照</text>
           </view>
           <view class="face-img img">
-            <image src="@/static/image/logo/small.png" mode="scaleToFill" />
+            <image :src="faceImg" mode="scaleToFill" />
             <text>人脸识别照</text>
           </view>
         </view>
@@ -80,44 +81,51 @@
 // import { getReasonsList_API } from '@/api/data.js'
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-// defineProps({
-//   way: {
-//     tppe: Boolean,
-//     default: true
-//   }
-// })
-const teacherName = ref('张三')
-const teachertId = ref('500222190010101234')
+import noImg from '@/static/image/slices/zwtp1.jpg'
+import { userLoginStore } from '@/store/login.js'
+const loginStore = userLoginStore()
+// 使用 defineProps 正确地获取父组件传递的 props
+const props = defineProps({
+  allInfo: {
+    type: Object,
+    default: () => ({})
+  }
+})
+const teacherName = ref('')
+const teachertId = ref('')
 const teachertOnly = ref('')
 const teacherPhone = ref('')
-const teacherSex = ref('')
+const teacherSex = ref(0)
 const teacherSexList = ref([
-  { value: 0, text: '男' },
-  { value: 1, text: '女' }
-])
-//所有队伍列表
-const teamsList = ref([
-  { value: 331, text: '一大队' },
-  { value: 332, text: '二大队' },
-  { value: 333, text: '三大队' },
-  { value: 334, text: '四大队' },
-  { value: 335, text: '五大队' },
-  { value: 336, text: '六大队' },
-  { value: 1332, text: '七大队' }
+  { value: '男', text: '男' },
+  { value: '女', text: '女' }
 ])
 //下拉框选中队伍(默认为当前登录大队)
-const selectTeam = ref(null)
-
+const selectTeam = ref(0)
+//所有队伍列表
+const teamsList = ref([])
+//证件照
+const IdImg = ref(noImg)
+//人脸识别照
+const faceImg = ref(noImg)
 //返回确认和取消操作给父级
 const emits = defineEmits(['confirm', 'cancel'])
 //性别
 const changeTeacherSex = e => {
-  teacherSex.value = e
+  if (e) {
+    teacherSex.value = e
+  } else {
+    teacherSex.value = 0
+  }
   console.log(teacherSex.value)
 }
 //部门
 const changeTeam = async e => {
-  selectTeam.value = e // e 为选中的部门id
+  if (e) {
+    selectTeam.value = e // e 为选中的部门id
+  } else {
+    selectTeam.value = 0 // 0 所有部门
+  }
   console.log(selectTeam.value)
 }
 //获取不带出理由列表
@@ -134,28 +142,30 @@ const changeTeam = async e => {
 // }
 
 //组件加载
-onLoad(() => {
-  // reasons.value = [
-  //   { Name: '不带出' },
-  //   { Name: '不带出' },
-  //   { Name: '不带出' },
-  //   { Name: '不带出' },
-  //   { Name: '不带出' },
-  //   { Name: '不带出' }
-  // ]
-  //获取不带出理由列表
-  // await getReasonsList()
+onLoad(async () => {
+  // 部门列表
+  teamsList.value = loginStore.teamsList
+  console.log(props.allInfo)
+  if (props.allInfo) {
+    teacherName.value = props.allInfo.RealName
+    teachertId.value = props.allInfo.PersonNo
+    teachertOnly.value = props.allInfo.Remark
+    teacherPhone.value = props.allInfo.Phone
+    teacherSex.value = props.allInfo.Sex
+    selectTeam.value = props.allInfo.CollegeId
+  }
 })
 
-// 不带出 确认按钮
+// 保存按钮
 const handleConfirm = () => {
-  uni.showToast({
-    title: '确认',
-    icon: 'none',
-    duration: 2000
-  })
+  const info = {
+    Remark: teachertOnly.value,
+    Phone: teacherPhone.value,
+    Sex: teacherSex.value,
+    selectTeam: selectTeam.value
+  }
   // 非其他理由
-  emits('confirm')
+  emits('confirm', info)
 }
 // 不带出 取消按钮
 const handleCancel = () => {
@@ -337,25 +347,26 @@ const handleCancel = () => {
         }
       }
       .modal-content-img {
-        width: 109.8633rpx /* 150px -> 109.8633rpx */;
+        width: 102.5391rpx /* 140px -> 102.5391rpx */;
         display: flex;
         flex-direction: column;
-        // justify-content: space-around;
+        justify-content: space-around;
         // align-items: flex-end;
         .img {
-          margin-top: 4.3945rpx /* 6px -> 4.3945rpx */;
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
           // align-items: flex-end;
           align-items: center;
+          padding: 3.6621rpx /* 5px -> 3.6621rpx */ 0;
           // flex-direction: column;
           text {
             font-size: 10.2539rpx /* 14px -> 10.2539rpx */;
+            margin-top: 5.8594rpx /* 8px -> 5.8594rpx */;
           }
           image {
-            width: 109.8633rpx /* 150px -> 109.8633rpx */;
-            height: 109.8633rpx /* 150px -> 109.8633rpx */;
+            width: 102.5391rpx /* 140px -> 102.5391rpx */;
+            height: 87.8906rpx /* 120px -> 87.8906rpx */;
           }
         }
       }

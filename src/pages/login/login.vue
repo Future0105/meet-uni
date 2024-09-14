@@ -29,7 +29,7 @@
           <view class="form-box">
             <view class="form-title">
               <text>智慧探访系统</text>
-              <text>版本 V2.1</text>
+              <text>版本 V1.0</text>
             </view>
             <view class="form-body">
               <!-- 表单组件 -->
@@ -300,7 +300,7 @@ const submitForm = () => {
       }
     }
     .isInp {
-      padding-bottom: 131.8359rpx /* 180px -> 131.8359rpx */;
+      padding-bottom: 157.4707rpx /* 215px -> 157.4707rpx */;
     }
     .footer {
       flex: 3;

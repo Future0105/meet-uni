@@ -72,16 +72,16 @@
             <uni-table ref="studentTable" border stripe emptyText="暂无更多数据">
               <uni-tr>
                 <uni-th width="130" align="center">学员姓名</uni-th>
-                <uni-th width="280" align="center">学员身份证号</uni-th>
-                <uni-th width="80" align="center">学员状态</uni-th>
-                <uni-th width="140" align="center">所在大队</uni-th>
-                <uni-th width="180" align="center">探访家属</uni-th>
+                <uni-th width="270" align="center">学员身份证号</uni-th>
+                <uni-th width="85" align="center">学员状态</uni-th>
+                <uni-th width="200" align="center">所在大队</uni-th>
+                <uni-th width="200" align="center">探访家属</uni-th>
                 <uni-th width="150" align="center">申请时间</uni-th>
                 <uni-th width="150" align="center">探访时间</uni-th>
-                <uni-th width="120" align="center">探访窗口</uni-th>
+                <uni-th width="130" align="center">探访窗口</uni-th>
                 <uni-th width="80" align="center">操作</uni-th>
               </uni-tr>
-              <uni-tr v-for="(item, index) in studentsList" :key="item.studentId">
+              <uni-tr v-for="(item, index) in recordList" :key="item.studentId">
                 <uni-td align="center">{{ item.name }}</uni-td>
                 <uni-td align="center">{{ item.num }}</uni-td>
                 <uni-td align="center">{{ item.teamName }}</uni-td>
@@ -91,12 +91,24 @@
                 <uni-td align="center">{{ item.z }}</uni-td>
                 <uni-td align="center">{{ item.zaidui }}</uni-td>
                 <uni-td>
-                  <view class="video-btn">
-                    <button @click="getMedia(item.studentId)" class="video" size="mini">录像回放</button>
+                  <view class="media-btn">
+                    <!-- <button @click="getMedia(item.studentId)" class="media" size="mini">录像回放</button> -->
+                    <button @click="getMedia(item.studentId)" class="media" size="mini">录音回放</button>
                   </view>
+                  <view class="audio-btn"> </view>
                 </uni-td>
               </uni-tr>
             </uni-table>
+          </view>
+          <!-- 分页器 -->
+          <view class="uni-pagination-box">
+            <uni-pagination
+              show-icon
+              :page-size="pageSize"
+              :current="pageCurrent"
+              :total="total"
+              @change="changePage"
+            />
           </view>
         </view>
       </view>
@@ -107,7 +119,7 @@
 <script setup>
 // import HeadFill from '../../components/HeadFill/HeadFill.vue'
 import Media from './Media.vue'
-import { getTodayOutList_API } from '@/api/data'
+import { getRecordList_API } from '@/api/data'
 import { userLoginStore } from '@/store/login.js'
 import { redirectTo } from '@/utils/to.js'
 import { onLoad, onUnload } from '@dcloudio/uni-app'
@@ -120,7 +132,7 @@ const searchAddress = ref('')
 //所有队伍列表
 const teamsList = ref([])
 //下拉框选中队伍(默认为当前登录大队)
-const selectTeam = ref(null)
+const selectTeam = ref(0)
 //媒体回放弹窗
 const showMedia = ref(false)
 //对应学员记录
@@ -139,7 +151,7 @@ const searchYear = ref([
   { value: 2033, text: '2033' },
   { value: 2034, text: '2034' }
 ])
-const selectYear = ref(null)
+const selectYear = ref(0)
 //月份
 const searchMonth = ref([
   { value: 1, text: '1月' },
@@ -155,26 +167,38 @@ const searchMonth = ref([
   { value: 11, text: '11月' },
   { value: 12, text: '12月' }
 ])
-const selectMonth = ref(null)
-const studentsList = ref([])
+const selectMonth = ref(0)
+const recordList = ref([])
 //下拉框更改部门查询学员
 const teamListChange = async e => {
-  selectTeam.value = e // e 为选中的部门id
+  if (e) {
+    selectTeam.value = e // e 为选中的部门id
+  } else {
+    selectTeam.value = 0 // 0 所有部门
+  }
 }
 //选择年份
 const selectYearChange = e => {
-  selectYear.value = e
+  if (e) {
+    selectYear.value = e
+  } else {
+    selectYear.value = 0
+  }
 }
 //选择月份
 const selectMonthChange = e => {
-  selectMonth.value = e
+  if (e) {
+    selectMonth.value = e
+  } else {
+    selectMonth.value = 0
+  }
 }
-//获取今日带出学员数据
-const getRecord = async (data = {}) => {
-  const RecordListRes = await getTodayOutList_API(data)
-  if (RecordListRes.code === 200) {
-    studentsList.value = RecordListRes.data
-    // console.log(studentsList.value)
+//探访记录
+const getRecordList = async (data = {}) => {
+  const recordListRes = await getRecordList_API(data)
+  if (recordListRes.code === 200) {
+    recordList.value = recordListRes.data
+    // console.log(recordList.value)
   } else {
     uni.showToast({
       title: '获取探访记录失败',
@@ -191,7 +215,7 @@ const updata = async () => {
     { value: 4, text: '三大队' },
     { value: 5, text: '安保大队' }
   ]
-  studentsList.value = [
+  recordList.value = [
     {
       studentId: 1001,
       name: '大阿达毛',
@@ -325,7 +349,7 @@ const updata = async () => {
       info: '无'
     }
   ]
-  // await getTodayOutList({ CollegeId: selectTeam.value })
+  await getRecordList()
 }
 
 //录像回放
@@ -342,7 +366,34 @@ const getMedia = Id => {
 const onCancel = () => {
   showMedia.value = false ////隐藏民警信息弹窗
 }
+//一页数据量
+const pageSize = 6
+// 当前页码
+const pageCurrent = ref(1)
+//数据总数
+const total = ref(0)
+// const total = computed(() => recordList.value.length)
+//总页数,Math.ceil() 函数将结果向上取整
+// const totalPages = computed(() => Math.ceil(totalItems.value / pageSize))
 
+// // 计算属性，用于获取当前页的数据
+// const paginatedData = computed(() => {
+//   const start = (pageCurrent.value - 1) * pageSize
+//   const end = pageCurrent.value * pageSize
+//   return recordList.value.slice(start, end)
+// })
+// 页码变化时的处理函数
+const changePage = async page => {
+  pageCurrent.value = page.current
+  await getRecordList({
+    RealName: searchName.value,
+    DepartPath: searchAddress.value,
+    CollegeId: selectTeam.value,
+    // PageShowNum：每页显示的数据条数：默认7，PageNum：当前页码：默认1
+    PageShowNum: pageSize,
+    PageNum: pageCurrent.value
+  })
+}
 onLoad(async () => {
   const loginStore = userLoginStore()
   // 部门列表
@@ -351,6 +402,7 @@ onLoad(async () => {
   if (teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId)) {
     selectTeam.value = teamsList.value.find(item => item.value === loginStore.loginInfo.CollegeId).value
   }
+  await getRecordList()
   // await getTodayOutList({ CollegeId: selectTeam.value })
   // // 设置定时器，每隔5秒请求一次数据
   // timer = setInterval(getData, 3000)
@@ -382,11 +434,13 @@ onLoad(async () => {
     //cover按比例缩放以完全覆盖背景区域，可能会裁剪掉部分图像
     background-size: 100% 100%; /* 图像会拉伸以适应背景区域的大小 */
     background-position: center; /* 可选：将背景图像居中 */
+    padding-top: 5.127rpx /* 7px -> 5.127rpx */;
     .title {
       position: relative;
       width: 100vw;
-      height: 13%;
-      padding: 18.3105rpx /* 25px -> 18.3105rpx */ 3% 10.9863rpx /* 15px -> 10.9863rpx */;
+      height: 10%;
+      // margin-top: 7.3242rpx /* 10px -> 7.3242rpx */;
+      // padding: 7.3242rpx /* 10px -> 7.3242rpx */ 3% 7.3242rpx /* 10px -> 7.3242rpx */;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -403,13 +457,18 @@ onLoad(async () => {
         position: absolute;
         left: 3%;
         width: 10%;
-        height: 60%;
+        height: 75%;
         font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
         gap: 3.6621rpx /* 5px -> 3.6621rpx */; /* 图标和文本之间的间距 */
+        ::v-deep {
+          .uni-icons {
+            font-size: 21.9727rpx /* 30px -> 21.9727rpx */ !important;
+          }
+        }
       }
     }
     .studentInfo {
-      height: 87%;
+      height: 90%;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -417,7 +476,7 @@ onLoad(async () => {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 18%;
+        height: 16%;
         margin: 0 3%;
         padding: 0 10.9863rpx /* 15px -> 10.9863rpx */;
         background-color: #f8f8f8;
@@ -577,16 +636,21 @@ onLoad(async () => {
               overflow: hidden;
               text-overflow: ellipsis;
             }
+            ::v-deep {
+              .uni-icons {
+                font-size: 16.1133rpx /* 22px -> 16.1133rpx */ !important;
+              }
+            }
           }
         }
       }
       .main {
-        max-height: 82%;
-        padding: 7.3242rpx /* 10px -> 7.3242rpx */ 3%;
+        height: 84%;
+        padding: 7.3242rpx /* 10px -> 7.3242rpx */ 3% 5.8594rpx /* 8px -> 5.8594rpx */;
         display: flex;
         flex-direction: column;
         .student-list {
-          height: 100%;
+          // height: 100%;
           // border: 1px #b8b5b5 solid;
           border-radius: 7.3242rpx /* 10px -> 7.3242rpx */;
           overflow-y: auto; /* 添加垂直滚动条 */
@@ -638,14 +702,14 @@ onLoad(async () => {
               font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
             }
           }
-          .video-btn {
+          .media-btn {
             // margin: 0;
             // padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             // background-color: #00aaff;
-            .video {
+            .media {
               width: 43.9453rpx /* 60px -> 43.9453rpx */;
               margin: 0;
               padding: 0;
@@ -656,6 +720,46 @@ onLoad(async () => {
               border: #00aaff 1px solid;
               white-space: nowrap;
               overflow: hidden;
+            }
+          }
+        }
+        .uni-pagination-box {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 25.6348rpx /* 35px -> 25.6348rpx */;
+          margin-top: 3.6621rpx /* 5px -> 3.6621rpx */;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          ::v-deep {
+            .uni-pagination {
+              height: 25.6348rpx /* 35px -> 25.6348rpx */;
+            }
+            //左右按钮
+            .uni-pagination__btn {
+              width: 21.9727rpx /* 30px -> 21.9727rpx */;
+              height: 20.5078rpx /* 28px -> 20.5078rpx */;
+              font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+              // background-color: #ce0c0c !important;
+              .uni-icons {
+                font-size: 13.1836rpx /* 18px -> 13.1836rpx */ !important;
+              }
+            }
+            //页数按钮
+            .uni-pagination__num-tag {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+              width: 21.9727rpx /* 30px -> 21.9727rpx */;
+              height: 20.5078rpx /* 28px -> 20.5078rpx */;
+            }
+            //分页器总数据
+            .uni-pagination__total {
+              display: none;
+              font-size: 13.1836rpx /* 18px -> 13.1836rpx */;
+              color: #fff;
             }
           }
         }
